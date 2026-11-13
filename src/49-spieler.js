@@ -17,7 +17,8 @@
   // PLATZ 3 hat eigene Felder in derselben Form. Erst beim ersten Aufruf gebaut (lazy), weil
   // Motorklasse und Zustandsobjekte in spaeteren Dateien stehen - ein Bau beim Laden waere die
   // temporale Todeszone.
-  const SPIELER_MAX = 3;
+  // Hybrid Dash 4.0: one car per controller, up to 8 local players (was 3).
+  const SPIELER_MAX = 8;
   var zusatzCache = null;
   function zusatzPlatzNeu(nr) {
     let motor = null, belegung = null;
@@ -109,12 +110,14 @@
     return 0;
   }
   // Farbe je Spieler (Cockpit, Derby-Balken): 1 gruen, 2 orange, 3 blau.
-  const SPIELER_FARBE = { 1: '#2ee06a', 2: '#ffb02e', 3: '#4db8ff' };
+  const SPIELER_FARBE = { 1: '#2ee06a', 2: '#ffb02e', 3: '#4db8ff', 4: '#e84bb0', 5: '#9c8cff', 6: '#ff6b4a', 7: '#35d6c6', 8: '#f5e050' };
   // Stereoseite je Zusatzspieler: 2 rechts wie bisher (PAN_ZWEI), 3 links. Spieler 1 bleibt
   // bei zwei Spielern links; bei dreien teilen sich 1 und 3 die linke Seite nicht ganz.
   function spielerPan(nr) {
     if (nr === 2) return typeof PAN_ZWEI !== 'undefined' ? PAN_ZWEI : 0.55;
     if (nr === 3) return -0.25;
+    // Hybrid Dash 4.0: players 4-8 spread across the stereo field.
+    if (nr >= 4) return [0.3, -0.5, 0.75, -0.75, 0.15][nr - 4] || 0;
     return 0;
   }
   function motorVon(wer) { return wer >= 2 ? zusatzPlatz(wer).motor : physEngine; }
@@ -125,7 +128,7 @@
     return m ? zusatzPlatz(Number(m[1])) : null;
   }
   // Tonhoehe des Rundengongs je Spieler: 2 wie bisher hoeher, 3 dazwischen.
-  function spielerTonHoehe(nr) { return nr === 2 ? 1.5 : nr === 3 ? 1.25 : 1; }
+  function spielerTonHoehe(nr) { return nr === 2 ? 1.5 : nr === 3 ? 1.25 : nr >= 4 ? [1.12, 1.33, 1.68, 0.89, 0.75][nr - 4] || 1 : 1; }
   // Einstellungen von Auto 1 auf einen Zusatzmotor (dieselbe Regel wie physEngine2Abgleichen:
   // Werte kopieren, die Gangtabelle als eigene Objekte).
   function zusatzMotorAbgleichen(m) {

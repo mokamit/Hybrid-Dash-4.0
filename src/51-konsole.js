@@ -677,6 +677,7 @@
       a.textContent = n ? '● ' + n + ' ' + t(n === 1 ? 'Auto' : 'Autos') : '○ ' + t('kein Auto');
       st.appendChild(a);
       if (typeof hdRelayChip === 'function') hdRelayChip(st);   // HybridDash: two-laptop chip
+      if (typeof hd4HubKnopf === 'function') hd4HubKnopf(st);    // Hybrid Dash 4.0: hub
       if (typeof hdStummKnopf === 'function') hdStummKnopf(st);  // HybridDash: mute
       // Kein Etikett "Neues Menü" mehr daneben - BESTELLT: "Mach das 'Neues Menü' Label oben
       // rechts weg". Als WIP gekennzeichnet bleibt das Menue in den Patchnotes.
@@ -728,7 +729,8 @@
   function kAutos() {
     try { return garage.filter((c) => c.device); } catch (e) { return []; }
   }
-  const K_ROLLE = { player: 'Steuern', player2: 'Spieler 2', player3: 'Spieler 3', ghost: 'NPC',
+  const K_ROLLE = { player: 'Steuern', player2: 'Spieler 2', player3: 'Spieler 3', player4: 'Player 4', player5: 'Player 5',
+                    player6: 'Player 6', player7: 'Player 7', player8: 'Player 8', ghost: 'NPC',
                     safetycar: 'Safety Car', challenger: 'Challenger', reinig: 'Reinigungsfahrzeug (WIP)', none: 'Aus' };
   function kPunkt(farbe, text) {
     const s = document.createElement('span');
@@ -1148,6 +1150,7 @@
     kn('fa-hd-tele', () => { if (typeof teleSeiteOeffnen === 'function') teleSeiteOeffnen(); });
     kn('fa-druck', () => konsoleZeige('track', 'print'));
     kn('fa-profil', () => meisterOeffnen());
+    kn('fa-hd4-karriere', () => { if (typeof hd4Oeffnen === 'function') hd4Oeffnen('karriere'); });   // Hybrid-Dash 4.0
     // v1.0.45 BESTELLT: "Reinigungsfahrzeug starten" im Autos- und Strecken-Menue.
     kn('fa-reinig-stre', () => reinigStarten());
     // BESTELLT: "wenn ich auf den Header tippe, soll es zur naechsten Option schalten".

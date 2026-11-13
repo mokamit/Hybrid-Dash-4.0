@@ -1,6 +1,38 @@
-# Hybrid-Dash 3.0
+# Hybrid-Dash 4.0
 
-[⬇ Download the Android app (APK)](https://github.com/mokamit/Hybrid-Dash-3.0/releases/latest/download/HybridDash.apk) · Play in the browser: [mokamit.github.io/Hybrid-Dash-3.0](https://mokamit.github.io/Hybrid-Dash-3.0/)
+Hybrid-Dash 4.0 is Hybrid-Dash 3.0 with everything it had, plus the systems below. They sit inside the
+3.0 menus - there is no separate hub:
+
+- **Race Control**: a **Career** card next to Championship; **Analysis** button on the Track card.
+- **Garage**: **Showroom** in the action bar.
+- **Multiplayer**: the Wi-Fi mode (host / join) and, below it, **Local players** (controllers on this laptop).
+- **Options**: tiles for **Analysis**, **Race strategy**, **Race engineer** and **AI drivers**.
+
+## New in 4.0
+
+| Feature | Where | What it does |
+|---|---|---|
+| **Career mode** | Race Control -> *Career* card | A season in the GT World Challenge format on your own tracks: Sprint Cup rounds (Qualifying 1, Race 1, Qualifying 2, Race 2, one mandatory stop inside the pit window) and Endurance Cup rounds (3 Hours, 6 Hours, 24 Hours, 65-minute maximum stint). Rolling starts, a point for pole, three titles. Pick a saved track for every round or design one. Progression: XP and driver level, prize money for team upgrades, licence points (Bronze to Pro, the AI field gets faster), sponsor objectives, trophies. |
+| **Showroom** | Garage -> *Showroom* | Every car as a collector card with a holographic finish that follows the pointer; click to turn it over. A car's record (races, wins, podiums, laps, best lap) raises its grade. The picture is the car's own photo from the Garage, or an image from `img/showroom/` (see the README there): one per model and colour, or one neutral render per model that is tinted to the car's colour. |
+| **Engine maps** | Cockpit strip, key **E**, **L3** | Rich / Standard / Lean per driver: power against fuel burn. |
+| **Fuel burn** | Options -> *Race strategy* | Wide-open throttle burns over-proportionally; fuel weight makes the car quicker as the stint goes on. |
+| **Tyre cliff and flat spots** | Options -> *Race strategy* | Grip drops sharply past each compound's window; a heavy lock-up flat-spots the fronts (vibration, fluttering grip, faster wear) until the tyres are changed. |
+| **Pit rules** | Options -> *Race strategy* | Speeding at pit entry is a time penalty; the crew works in sequence (fuel about 3 s, tyres 4 s, full service with front wing 7-8 s); the mini-game still shaves tenths. |
+| **Track evolution and light rain** | Options -> *Race strategy* | Rubber builds up with every lap, drizzle takes grip away and washes it off. |
+| **Mechanical failures** | Options -> *Race strategy* (off by default) | Thermal throttling, brake fade and impact damage that need a pit stop. |
+| **Analysis** | Options -> *Analysis* (or the Track card) | Distance-based speed trace with minimum corner speeds, time-delta graph, throttle and brake traces, sector consistency matrix (standard deviation per sector), incident heatmap. |
+| **Race engineer** | Options -> *Race engineer* | Radio callouts for gaps, tyre life, fuel laps, the pit window with a compound call and traffic on exit, weather and failures. |
+| **AI drivers** | Options -> *AI drivers* | NPCs with lasting personalities that learn each track piece by piece and remember where passes work against each rival. |
+| **Eight players** | Multiplayer -> *Local players* | Up to 8 player slots (was 3): one car per controller on this laptop with a press-to-join lobby and pinned controllers, and remote players from the Multiplayer tab can take any of the slots. |
+
+The 4.0 code lives in `src/98zb-hd4-kern.js` to `src/98zj-hd4-ui.js`; the older files only carry
+small hooks. `HYBRIDDASH4.selbsttest()` in the browser console runs the 4.0 self-test.
+
+---
+
+# Hybrid-Dash 3.0 (everything below is still in 4.0)
+
+[⬇ Download the Android app (APK)](https://github.com/mokamit/Hybrid-Dash-4.0/releases/latest/download/HybridDash.apk) · Play in the browser: [mokamit.github.io/Hybrid-Dash-4.0](https://mokamit.github.io/Hybrid-Dash-4.0/)
 
 An open source controller for Carrera Hybrid Bluetooth cars, with physics from scientific
 formulae and engine sound from an enginesim implementation, plus a Race Director with flags and

@@ -265,7 +265,7 @@
                // max-width: auf dem Telefon wird sie kleiner, auf dem Bildschirm nicht
                // groesser als vorgesehen.
                + '" style="width:' + breite + 'px;max-width:100%;height:auto"'
-               + ' role="img" aria-label="Rundenzeiten je Runde">');
+               + hdT(' role="img" aria-label="Rundenzeiten je Runde">'));
     // Bezugslinie auf der Bestzeit: so liest man den Abstand jeder Runde ohne zu rechnen.
     const yB = yPos(beste);
     teile.push('<line x1="' + links + '" y1="' + yB.toFixed(1) + '" x2="' + (breite - 8)
@@ -303,7 +303,7 @@
                  + ' font-family="monospace">' + (i + 1) + '</text>');
     }
     teile.push('<text x="' + links + '" y="' + (oben + hoehe + 23) + '" font-size="8.5"'
-               + ' fill="#6f7a94">Runde</text>');
+               + hdT(' fill="#6f7a94">Runde</text>'));
     teile.push('</svg>');
     host.innerHTML = teile.join('');
 
@@ -405,8 +405,8 @@
     if (kopf) {
       kopf.textContent = o.sessions.length
         ? o.sessions.length + ' Sitzung' + (o.sessions.length === 1 ? '' : 'en') + ', '
-          + autos.reduce((a, c) => a + c.runden, 0) + ' Runden, '
-          + autos.reduce((a, c) => a + c.km, 0).toFixed(1) + ' km simuliert'
+          + autos.reduce((a, c) => a + c.runden, 0) + hdT(' Runden, ')
+          + autos.reduce((a, c) => a + c.km, 0).toFixed(1) + hdT(' km simuliert')
         : 'noch nichts gespeichert';
     }
     if (!o.sessions.length) { host.innerHTML = ''; return; }
@@ -459,7 +459,7 @@
     const z = (x) => String(x === null || x === undefined ? '' : x)
       .replace(/[";\n]/g, ' ');
     const komma = (x) => String(x).replace('.', ',');
-    const zeilen = ['Datum;Zeit;Modus;Strecke;Auto;Kennung;Rolle;Runde;Zeit (s);km sim;m echt'];
+    const zeilen = [hdT('Datum;Zeit;Modus;Strecke;Auto;Kennung;Rolle;Runde;Zeit (s);km sim;m echt')];
     for (const s of o.sessions) {
       const tag = (s.zeit || '').slice(0, 10);
       const uhr = (s.zeit || '').slice(11, 19);
@@ -473,7 +473,7 @@
     }
     zeilen.push('');
     zeilen.push('Summe je Auto');
-    zeilen.push('Auto;Sitzungen;Runden;Beste (s);km sim;m echt');
+    zeilen.push(hdT('Auto;Sitzungen;Runden;Beste (s);km sim;m echt'));
     for (const c of Object.values(o.cars)) {
       zeilen.push([z(c.name), c.sitzungen, c.runden,
                    c.besteMs === null ? '' : komma((c.besteMs / 1000).toFixed(3)),
@@ -498,8 +498,8 @@
       // Ohne Rueckfrage waere das die einzige Stelle in der App, an der ein Klick
       // unwiederbringlich Daten loescht. Und geloescht wird wirklich alles, auch die
       // Geraetekennungen - genau deshalb gibt es den Knopf.
-      if (!confirm('Alle gespeicherten Sitzungen und Kilometerstände löschen? '
-                   + 'Das lässt sich nicht zurücknehmen.')) return;
+      if (!confirm(hdT('Alle gespeicherten Sitzungen und Kilometerstände löschen? ')
+                   + hdT('Das lässt sich nicht zurücknehmen.'))) return;
       try { localStorage.removeItem(SESSION_STORE); } catch (e) { /* privat */ }
       renderSessions();
       showHudToast('SITZUNGEN GELÖSCHT');
@@ -605,7 +605,7 @@
     // v1.0.12: Gesamtzeit und Strafe fuer verpasste Pflichtstopps (Meisterschaft des Leiters).
     const summe = imRennen ? zeiten.reduce((a, b) => a + b, 0) : null;
     const strafe = imRennen && typeof racePenaltyMs === 'function' ? racePenaltyMs() : null;
-    return { id: mp.id, name: mp.name || 'ohne Namen', laps: zeiten.length,
+    return { id: mp.id, name: mp.name || hdT('ohne Namen'), laps: zeiten.length,
              letzte, beste, summe, strafe,
              abgaenge: (typeof offtrackZaehler !== 'undefined') ? offtrackZaehler : 0 };
   }

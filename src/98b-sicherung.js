@@ -135,15 +135,15 @@
   // aelter als die App, in die sie geladen wird - und der unangenehmere: ein Regler, der
   // stumm auf der Werksvorgabe stehen bleibt, sieht aus wie ein wiederhergestellter.
   function sicherungPruefen(b) {
-    if (!b || typeof b !== 'object') return { fehler: 'Das ist keine Sicherung.' };
+    if (!b || typeof b !== 'object') return { fehler: hdT('Das ist keine Sicherung.') };
     if (b.typ !== SICHERUNG_TYP) {
-      return { fehler: 'Das ist keine OmegaSim-Sicherung (Typ: '
-                     + (b.typ === undefined ? 'fehlt' : String(b.typ).slice(0, 40)) + ').' };
+      return { fehler: hdT('Das ist keine OmegaSim-Sicherung (Typ: ')
+                     + (b.typ === undefined ? hdT('fehlt') : String(b.typ).slice(0, 40)) + ').' };
     }
     if (!(b.version <= SICHERUNG_VERSION)) {
-      return { fehler: 'Diese Sicherung ist Fassung ' + b.version
-                     + ', diese App versteht bis ' + SICHERUNG_VERSION
-                     + '. Bitte die App aktualisieren.' };
+      return { fehler: hdT('Diese Sicherung ist Fassung ') + b.version
+                     + hdT(', diese App versteht bis ') + SICHERUNG_VERSION
+                     + hdT('. Bitte die App aktualisieren.') };
     }
     const regler = b.regler && typeof b.regler === 'object' ? b.regler : {};
     // presetPruefen() aus 98-presets.js - dieselbe Pruefung, die der Preset-Import nutzt.
@@ -163,7 +163,7 @@
     // Unbrauchbare Werte brechen ab und aendern NICHTS. Eine halb angewandte Sicherung ist
     // schlimmer als eine abgelehnte: danach weiss niemand mehr, was der Stand ist.
     if (p.bad.length) {
-      return { fehler: 'Unbrauchbare Werte, nichts geaendert: ' + p.bad.join(', ') };
+      return { fehler: hdT('Unbrauchbare Werte, nichts geaendert: ') + p.bad.join(', ') };
     }
     // ZUERST die Ablagen, DANN die Regler. Manche Regler schreiben beim Setzen in eine
     // Ablage (der Layout-Waehler in chc.layout.v1, die Sprache in omegasim-lang); in der
@@ -398,16 +398,16 @@
   const LAGE_ABLAGEN = [
     // Schluessel, Name, und wie man den Inhalt zaehlt. `zahl` gibt null zurueck, wenn es
     // nichts zu zaehlen gibt - dann wird die Zeile weggelassen.
-    ['chc.layout.v1', 'Fahrzeug-Layout', (v) => (v && Object.keys(v).length) || null],
-    ['carrera-hybrid-tracks', 'Strecken', (v) => (Array.isArray(v) ? v.length
+    ['chc.layout.v1', hdT('Fahrzeug-Layout'), (v) => (v && Object.keys(v).length) || null],
+    ['carrera-hybrid-tracks', hdT('Strecken'), (v) => (Array.isArray(v) ? v.length
                                                  : (v && typeof v === 'object' ? Object.keys(v).length : null))],
-    ['chc.sessions.v1', 'Sitzungen', (v) => (Array.isArray(v) ? v.length
+    ['chc.sessions.v1', hdT('Sitzungen'), (v) => (Array.isArray(v) ? v.length
                                              : (v && Array.isArray(v.sessions) ? v.sessions.length : null))],
-    ['carrera-hybrid-macros', 'Aufnahmen', (v) => (Array.isArray(v) ? v.length
+    ['carrera-hybrid-macros', hdT('Aufnahmen'), (v) => (Array.isArray(v) ? v.length
                                                    : (v ? Object.keys(v).length : null))],
-    ['chc.motorwerkstatt.v1', 'Motorwerkstatt', (v) => (v && Object.keys(v).length) || null],
-    ['chc.presets.v1', 'eigene Voreinstellungen', (v) => (v && Object.keys(v).length) || null],
-    ['carrera-hybrid-gamepad-bindings-v2', 'Tastenbelegung',
+    ['chc.motorwerkstatt.v1', hdT('Motorwerkstatt'), (v) => (v && Object.keys(v).length) || null],
+    ['chc.presets.v1', hdT('eigene Voreinstellungen'), (v) => (v && Object.keys(v).length) || null],
+    ['carrera-hybrid-gamepad-bindings-v2', hdT('Tastenbelegung'),
       (v) => (v && Object.keys(v).length ? 1 : null)],
   ];
 
@@ -458,15 +458,15 @@
                           + '"></span>' : '';
         // Ohne eingetragenen Namen zeigt die Zeile die FARBE als Kennung - genau die
         // bekommt das Auto beim Verbinden auch wieder.
-        const wie = a.alias ? a.alias : (f ? f.name : 'ohne Namen');
+        const wie = a.alias ? a.alias : (f ? f.name : hdT('ohne Namen'));
         return '<span class="sich-auto">' + punkt + wie + '</span>';
       });
-      teile.push('<span class="sich-punkt"><b>' + l.autos.length + ' Auto'
-                 + (l.autos.length === 1 ? '' : 's') + ' gemerkt:</b> '
+      teile.push('<span class="sich-punkt"><b>' + l.autos.length + ' '
+                 + (l.autos.length === 1 ? hdT('Auto gemerkt:') : hdT('Autos gemerkt:')) + '</b> '
                  + namen.join(', ') + '</span>');
     }
     if (l.regler) {
-      teile.push('<span class="sich-punkt">' + l.regler + ' Einstellungen</span>');
+      teile.push('<span class="sich-punkt">' + l.regler + hdT(' Einstellungen</span>'));
     }
     for (const p of l.posten) {
       teile.push('<span class="sich-punkt">' + p.n + ' ' + p.name + '</span>');
@@ -474,18 +474,18 @@
     const leer = !l.autos.length && !l.regler && !l.posten.length;
     el.classList.toggle('leer', leer);
     if (leer) {
-      el.innerHTML = '<b>Im Browser liegt nichts.</b> Ein neu verbundenes Auto bekommt '
-                   + 'den n\u00e4chsten freien Namen und die n\u00e4chste freie Farbe '
-                   + '\u2013 das erste also Nummer 1 in Wei\u00df.';
+      el.innerHTML = hdT('<b>Im Browser liegt nichts.</b> Ein neu verbundenes Auto bekommt ')
+                   + hdT('den n\u00e4chsten freien Namen und die n\u00e4chste freie Farbe ')
+                   + hdT('\u2013 das erste also Nummer 1 in Wei\u00df.');
     } else {
-      let kopf = '<b>Im Browser liegt:</b>';
+      let kopf = hdT('<b>Im Browser liegt:</b>');
       // UND DIE FOLGE FUER DAS NAECHSTE AUTO, ausgesprochen. Ohne sie muss man aus
       // "0 Autos gemerkt" selbst schliessen, was beim Verbinden passiert.
       let fuss = l.autos.length
-        ? 'Ein bekanntes Auto bekommt seinen Namen und seine Farbe zur\u00fcck; ein neues '
-          + 'den n\u00e4chsten freien.'
-        : '<b>Keine Autos gemerkt</b> \u2013 ein neu verbundenes bekommt '
-          + 'Nummer 1 in Wei\u00df.';
+        ? hdT('Ein bekanntes Auto bekommt seinen Namen und seine Farbe zur\u00fcck; ein neues ')
+          + hdT('den n\u00e4chsten freien.')
+        : hdT('<b>Keine Autos gemerkt</b> \u2013 ein neu verbundenes bekommt ')
+          + hdT('Nummer 1 in Wei\u00df.');
       el.innerHTML = kopf + '<div class="sich-punkte">' + teile.join('') + '</div>'
                    + '<div style="margin-top:5px">' + fuss + '</div>';
     }
@@ -509,22 +509,21 @@
   // Sonde dasselbe Ergebnis lesen kann, das hier zu Text wird.
   function sicherungBericht(r) {
     if (r.fehler) return r.fehler;
-    let t = r.nRegler + ' Einstellungen und ' + r.nAblagen + ' Ablagen geladen.';
+    let t = r.nRegler + hdT(' Einstellungen und ') + r.nAblagen + hdT(' Ablagen geladen.');
     if (r.neu.length) {
-      t += ' ' + r.neu.length + ' Einstellung' + (r.neu.length === 1 ? '' : 'en')
-         + ' gibt es erst seit dieser Sicherung und bleibt'
-         + (r.neu.length === 1 ? '' : 'en') + ' auf dem bisherigen Wert: '
-         + r.neu.slice(0, 6).join(', ') + (r.neu.length > 6 ? ' und weitere' : '') + '.';
+      t += ' ' + r.neu.length + ' ' + (r.neu.length === 1
+           ? hdT('Einstellung gibt es erst seit dieser Sicherung und bleibt auf dem bisherigen Wert:')
+           : hdT('Einstellungen gibt es erst seit dieser Sicherung und bleiben auf dem bisherigen Wert:')) + ' '
+         + r.neu.slice(0, 6).join(', ') + (r.neu.length > 6 ? hdT(' und weitere') : '') + '.';
     }
     if (r.unknown.length) {
-      t += ' ' + r.unknown.length + ' Eintrag' + (r.unknown.length === 1 ? '' : 'e')
-         + ' aus der Datei kennt diese App nicht: '
-         + r.unknown.slice(0, 6).join(', ') + (r.unknown.length > 6 ? ' und weitere' : '')
+      t += ' ' + r.unknown.length + ' ' + (r.unknown.length === 1 ? hdT('Eintrag aus der Datei kennt diese App nicht:')
+                                      : hdT('Einträge aus der Datei kennt diese App nicht:')) + ' '
+         + r.unknown.slice(0, 6).join(', ') + (r.unknown.length > 6 ? hdT(' und weitere') : '')
          + '.';
     }
     if (r.fremd.length) {
-      t += ' ' + r.fremd.length + ' fremde Ablage' + (r.fremd.length === 1 ? '' : 'n')
-         + ' uebergangen.';
+      t += ' ' + r.fremd.length + ' ' + (r.fremd.length === 1 ? hdT('fremde Ablage uebergangen.') : hdT('fremde Ablagen uebergangen.'));
     }
     return t;
   }
@@ -540,8 +539,8 @@
       a.download = 'omegasim-sicherung-' + new Date().toISOString().slice(0, 10) + '.json';
       a.click();
       URL.revokeObjectURL(url);
-      sicherungSagen(Object.keys(b.regler).length + ' Einstellungen und '
-                     + Object.keys(b.ablagen).length + ' Ablagen gesichert ('
+      sicherungSagen(Object.keys(b.regler).length + hdT(' Einstellungen und ')
+                     + Object.keys(b.ablagen).length + hdT(' Ablagen gesichert (')
                      + Math.round(txt.length / 1024) + ' kB).', 'ok');
     };
   }
@@ -556,7 +555,7 @@
       try {
         b = JSON.parse(await datei.text());
       } catch (err) {
-        sicherungSagen('Die Datei ist nicht lesbar: ' + err.message, 'bad');
+        sicherungSagen(hdT('Die Datei ist nicht lesbar: ') + err.message, 'bad');
         return;
       }
       const r = sicherungAnwenden(b);
@@ -568,8 +567,8 @@
         // Gamepad. Ehrlich hingeschrieben statt selbst neu zu laden: ein erzwungenes
         // Neuladen mitten in einer Verbindung trennt das Auto.
         sicherungSagen(sicherungBericht(r)
-          + ' Strecken, Rundenzeiten, Autonamen und Tastenbelegung sind nach einem Neuladen'
-          + ' der Seite da.', 'ok');
+          + hdT(' Strecken, Rundenzeiten, Autonamen und Tastenbelegung sind nach einem Neuladen')
+          + hdT(' der Seite da.'), 'ok');
         lageZeichnen();
       }
     };

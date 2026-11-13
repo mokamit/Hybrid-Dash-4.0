@@ -199,8 +199,8 @@
     if (!fahren) return;
     const banner = document.createElement('div');
     banner.className = 'hd-banner'; banner.id = 'hd-banner';
-    banner.innerHTML = '<div class="hd-banner-logo" aria-label="HYBRID-DASH 3.0" data-i18n-skip><span class="hd-bl-text">HYBRID</span>'
-      + '<span class="hd-bl-strich">-</span><span class="hd-bl-text">DASH</span><span class="hd-bl-plakette">3.0</span></div>'
+    banner.innerHTML = '<div class="hd-banner-logo" aria-label="HYBRID-DASH 4.0" data-i18n-skip><span class="hd-bl-text">HYBRID</span>'
+      + '<span class="hd-bl-strich">-</span><span class="hd-bl-text">DASH</span><span class="hd-bl-plakette">4.0</span></div>'
       + '<div class="hd-banner-knoepfe"></div>';
     const knoepfe = banner.querySelector('.hd-banner-knoepfe');
     ['k-wiki', 'k-tutorial-start', 'k-steuerung-start', 'home-apk', 'home-install'].forEach((id) => { const el = $(id); if (el) knoepfe.appendChild(el); });

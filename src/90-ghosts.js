@@ -260,19 +260,19 @@
       if (dort.includes(n)) continue;          // im ersten Durchgang platziert
       if (!dort.length) { dazu(k, n); continue; }
       const vorher = (b[n] && b[n].label) || k;
-      const mit = dort.map(x => BIND_ACTION_LABELS[x] || x).join(' und ');
+      const mit = dort.map(x => BIND_ACTION_LABELS[x] || x).join(hdT(' und '));
       const vk = bindingKey(VORGABE[n]);
       if (vk && !(belegt.get(vk) || []).length) {
         b[n] = { ...DEFAULT_BINDINGS[n] };
         dazu(vk, n);
-        bericht.push((BIND_ACTION_LABELS[n] || n) + ': lag auf ' + vorher + ' zusammen mit '
-                     + mit + ', zurueck auf ' + b[n].label);
+        bericht.push((BIND_ACTION_LABELS[n] || n) + hdT(': lag auf ') + vorher + hdT(' zusammen mit ')
+                     + mit + hdT(', zurueck auf ') + b[n].label);
       } else {
         // Unbelegt heisst type 'none' und nicht null - dieselbe Form wie resetcar ab Werk,
         // damit die Tabelle in den Optionen sie darstellen kann.
         b[n] = { type: 'none', index: -1, label: 'nicht belegt' };
-        bericht.push((BIND_ACTION_LABELS[n] || n) + ': lag auf ' + vorher + ' zusammen mit '
-                     + mit + ', jetzt unbelegt - bitte neu zuweisen');
+        bericht.push((BIND_ACTION_LABELS[n] || n) + hdT(': lag auf ') + vorher + hdT(' zusammen mit ')
+                     + mit + hdT(', jetzt unbelegt - bitte neu zuweisen'));
       }
     }
     if (bericht.length) b.__kollisionen = bericht;
@@ -481,8 +481,13 @@
     // HybridDash 2.1: button names of the chosen controller style (98l-hd-ui.js).
     const hdName = typeof hdPadLabel === 'function' ? hdPadLabel(b) : null;
     if (hdName) return hdName;
-    if (b.label) return b.label;
-    return b.type === 'axis' ? `Achse ${b.index}${b.invert ? ' (invertiert)' : ''}` : `Knopf ${b.index}`;
+    // Hybrid Dash 4.0: a stored label keeps the language it was saved in ("Knopf 6") - translate its
+    // fixed words on the way out instead of rewriting the saved mapping.
+    if (b.label) {
+      return String(b.label).replace(/^Knopf /, hdT('Knopf') + ' ').replace(/^Achse /, hdT('Achse') + ' ')
+        .replace(' (invertiert)', hdT(' (invertiert)'));
+    }
+    return b.type === 'axis' ? `${hdT('Achse')} ${b.index}${b.invert ? hdT(' (invertiert)') : ''}` : `${hdT('Knopf')} ${b.index}`;
   }
 
   // ---- Die Controller-Grafik unter dem Cockpit --------------------------------------
@@ -800,13 +805,13 @@
         ruhe: bester.ruhe,
         min: Math.min(bester.ruhe, bester.jetzt),
         max: Math.max(bester.ruhe, bester.jetzt),
-        label: `Achse ${bester.i}${invert ? ' (invertiert)' : ''}`,
+        label: `${hdT('Achse')} ${bester.i}${invert ? hdT(' (invertiert)') : ''}`,
       };
       log(`Zuordnung gesetzt (Spieler ${bindEditSpieler}): ${BIND_ACTION_LABELS[action]} `
           + `-> Achse ${bester.i} (Ruhe ${bester.ruhe.toFixed(2)}, `
           + `Ausschlag ${bester.d.toFixed(2)})`, 'info');
     } else {
-      ziel[action] = { type: 'button', index: bester.i, label: `Knopf ${bester.i}` };
+      ziel[action] = { type: 'button', index: bester.i, label: `${hdT('Knopf')} ${bester.i}` };
       log(`Zuordnung gesetzt (Spieler ${bindEditSpieler}): ${BIND_ACTION_LABELS[action]} `
           + `-> Knopf ${bester.i}`, 'info');
     }
@@ -1240,7 +1245,7 @@
       return '<span class="car-store-zeile" data-id="' + encodeURIComponent(id) + '">'
            + '<span class="car-store-farbe" style="background:' + f.hex + '"></span>'
            + wie
-           + '<button type="button" class="car-store-loeschen" title="Löschen"'
+           + '<button type="button" class="car-store-loeschen" title="' + hdT('Löschen') + '"'
            + ' data-i18n-skip>&times;</button></span>';
     }).join('');
     // Klick auf die Zeile (nicht auf das x): verbundene Autos zur Auswahl zeigen. Ist nur
@@ -1434,13 +1439,13 @@
     $('lat-step').textContent = lat.on ? String(lat.step) : '\u2013';
     $('lat-tiles').textContent = lat.tiles;
     if (!lat.rows.length) {
-      $('lat-rows').innerHTML = '<tr><td colspan="4" class="muted">noch nichts gemessen</td></tr>';
+      $('lat-rows').innerHTML = hdT('<tr><td colspan="4" class="muted">noch nichts gemessen</td></tr>');
       return;
     }
     $('lat-rows').innerHTML = lat.rows.map(r =>
       '<tr><td>' + r.steer.toFixed(2) + '</td><td>' + Math.round(r.steer * 127) + '</td>'
       + '<td>' + r.tiles + '</td>'
-      + '<td' + (r.ok ? '' : ' class="cm-new"') + '>' + (r.ok ? 'hielt' : 'RUNTER') + '</td></tr>'
+      + '<td' + (r.ok ? '' : ' class="cm-new"') + '>' + (r.ok ? hdT('hielt') : hdT('RUNTER')) + '</td></tr>'
     ).join('');
   }
 
@@ -1466,8 +1471,8 @@
       log('Querablage: gekippt bei ' + (lat.steer * lat.dir).toFixed(2) + ' ('
           + Math.round(lat.steer * 127) + ' von 127). Letzter haltender Wert '
           + last.toFixed(2) + '.', 'err');
-      showHudToast('KIPPT BEI ' + (lat.steer * lat.dir).toFixed(2));
-      latStop('Bahn verlassen');
+      showHudToast(hdT('KIPPT BEI ') + (lat.steer * lat.dir).toFixed(2));
+      latStop(hdT('Bahn verlassen'));
       return;
     }
     lat.step++;
@@ -1475,7 +1480,7 @@
     lat.tiles = 0;
     lat.stepAt = rennZeitJetzt();
     latRender();
-    if (lat.steer >= 1) latStop('voller Lenkausschlag erreicht, ohne dass es kippte');
+    if (lat.steer >= 1) latStop(hdT('voller Lenkausschlag erreicht, ohne dass es kippte'));
   }
 
   function latTick() {
@@ -1483,7 +1488,7 @@
     if (!lat.on || !lat.car) return;
     // Aus der Garage entfernt oder getrennt - dann ist die Messung ungueltig, nicht
     // stillschweigend zu Ende.
-    if (!garage.includes(lat.car) || !lat.car.rx) { latStop('Auto nicht mehr verbunden'); return; }
+    if (!garage.includes(lat.car) || !lat.car.rx) { latStop(hdT('Auto nicht mehr verbunden')); return; }
     const hold = parseInt($('lat-hold').value, 10);
     if (rennZeitJetzt() - lat.stepAt >= hold) { latCommit(true); return; }
     writeToCar(lat.car, lat.steer * lat.dir, parseFloat($('lat-throttle').value),
@@ -1764,6 +1769,12 @@
     { id: 'player', name: 'Spieler 1', kurz: 'SPIELER 1' },
     { id: 'player2', name: 'Spieler 2', kurz: 'SPIELER 2' },
     { id: 'player3', name: 'Spieler 3', kurz: 'SPIELER 3' },
+    // Hybrid Dash 4.0: local multiplayer, one car per controller.
+    { id: 'player4', name: 'Player 4', kurz: 'PLAYER 4' },
+    { id: 'player5', name: 'Player 5', kurz: 'PLAYER 5' },
+    { id: 'player6', name: 'Player 6', kurz: 'PLAYER 6' },
+    { id: 'player7', name: 'Player 7', kurz: 'PLAYER 7' },
+    { id: 'player8', name: 'Player 8', kurz: 'PLAYER 8' },
     // v1.0 BESTELLT: "Safetycar-Funktion (experimentell): neben 'Ghost' kann ich Safetycar
     // einstellen." Hoechstens eines - wie die Spielerrollen. Vor "Ghost", damit der Pfeil von
     // Ghost wie bisher zu "Aus" fuehrt.
@@ -1785,7 +1796,11 @@
   function garRollenFrei(car) {
     return GAR_ROLLEN.filter((r) => (!/^player\d?$|^safetycar$|^reinig$/.test(r.id)
       || !garage.some((c) => c !== car && c.role === r.id))
-      && (trackMode === 'on' || BAHN_ROLLEN.indexOf(r.id) < 0 || (car && car.role === r.id)));
+      && (trackMode === 'on' || BAHN_ROLLEN.indexOf(r.id) < 0 || (car && car.role === r.id))
+      // Hybrid Dash 4.0: players 4-8 are offered one at a time - "Player 5" only once Player 4
+      // has a car - so the role list stays as short as the field of players needs.
+      && (!/^player[4-9]$/.test(r.id) || (car && car.role === r.id)
+          || garage.some((c) => c !== car && c.role === 'player' + (Number(r.id.slice(6)) - 1))));
   }
   // Beim Wechsel in den Ausdruck-Modus: Bahn-Rollen auf "Aus" (gerufen aus applyScanMode).
   function bahnRollenPruefen() {
@@ -1900,12 +1915,12 @@
       rst.type = 'button';
       rst.className = 'gar-speed-reset';
       rst.innerHTML = '&#8635;';
-      rst.title = 'Zurueck auf Mittel (Vorgabe)';
+      rst.title = hdT('Zurueck auf Mittel (Vorgabe)');
       rst.onclick = (e) => {
         e.stopPropagation();
         car.ghostStufe = 1;
         carRolleMerken(car);
-        showHudToast(garageLabel(car).toUpperCase() + ' TEMPO: MITTEL');
+        showHudToast(garageLabel(car).toUpperCase() + hdT(' TEMPO: MITTEL'));
         renderGarage();
       };
       const stufeS = st[stufe];
@@ -2072,9 +2087,9 @@
     }
     const p = (x) => Math.round(x * 100) + '%';
     const versatz = ch.pitVersatz > 0 ? '+' + ch.pitVersatz : String(ch.pitVersatz);
-    return '<div class="gar-speed"><label>Charakter</label><b>Angriff ' + p(ch.angriff)
-         + ' · Verteidigung ' + p(ch.verteidigung)
-         + ' · Fehler ' + p(ch.fehler)
+    return hdT('<div class="gar-speed"><label>Charakter</label><b>Angriff ') + p(ch.angriff)
+         + hdT(' · Verteidigung ') + p(ch.verteidigung)
+         + hdT(' · Fehler ') + p(ch.fehler)
          + ' · Kurve ' + p(ch.kurvenAbzug)
          + ' · Box ' + versatz + '</b></div>';
   }
@@ -2318,6 +2333,18 @@
     });
     leiste.appendChild(bek);
     leiste.appendChild(gep);
+    // Hybrid-Dash 4.0: the Showroom (98zh-hd4-showroom.js) is a page of the Garage.
+    if (typeof hd4Oeffnen === 'function') {
+      const sh = document.createElement('div');
+      sh.className = 'opt-row opt-breit gar-a-aktion';
+      const shKnopf = document.createElement('button');
+      shKnopf.type = 'button'; shKnopf.id = 'gar-hd4-showroom'; shKnopf.className = 'gar-karte-neu';
+      shKnopf.setAttribute('data-i18n-skip', '');
+      shKnopf.textContent = 'Showroom';
+      shKnopf.onclick = () => hd4Oeffnen('showroom');
+      sh.appendChild(shKnopf);
+      leiste.appendChild(sh);
+    }
     { const z = garAktionsZeile('gar-to-cockpit'); if (z) leiste.appendChild(z); }
     if (typeof hdGepaartMerken === 'function') hdGepaartMerken();
     // v1.1.3: virtuelle Fahrt (60d-virtuell.js) - ein Auto ohne Bluetooth auf der Editor-Strecke.
@@ -2741,7 +2768,7 @@
       if (frei && gemerkt.role !== 'none') setCarRole(car, gemerkt.role);
       else if (!playerCar) setCarRole(car, 'player');
       else setCarRole(car, 'ghost');
-      log(`${garageLabel(car)} verbunden (${garage.length} insgesamt)` + (opt && opt.auto ? ' - automatisch beim Start.' : '.'), 'info');
+      log(`${garageLabel(car)} verbunden (${garage.length} insgesamt)` + (opt && opt.auto ? hdT(' - automatisch beim Start.') : '.'), 'info');
       if (typeof hdAutoVerbunden === 'function') hdAutoVerbunden(car);   // HybridDash 2.1
       playStartFx();
     } finally {
@@ -4884,7 +4911,7 @@ const GHOST_GRID_MAX = 0.9;   // maximale Querlage beim Selbst-Einparken (experi
               ? '??' : car.tileCode.toString(16).padStart(2, '0'))
           + ', Kachelabstaende ' + JSON.stringify((g.tileRing || []).slice(-4)), 'info');
     }
-    showHudToast(garageLabel(car).toUpperCase() + ' STEHT, SCH\u00dcTTELN');
+    showHudToast(garageLabel(car).toUpperCase() + hdT(' STEHT, SCH\u00dcTTELN'));
   }
 
   // Ueber diese Zeit fuehrt das Ziel-Tempo nach dem Entparken von 0 hoch.
@@ -6384,7 +6411,7 @@ const GHOST_GRID_MAX = 0.9;   // maximale Querlage beim Selbst-Einparken (experi
       car.ghost.iTerm = 0;
     }
     log(garageLabel(car) + ': ' + why + ', f\u00e4hrt weiter.', 'info');
-    showHudToast(garageLabel(car).toUpperCase() + ' F\u00c4HRT');
+    showHudToast(garageLabel(car).toUpperCase() + hdT(' F\u00c4HRT'));
   }
 
   // ---- Gelbe Flagge: eine Sekunde halten ----
@@ -7349,7 +7376,7 @@ const GHOST_GRID_MAX = 0.9;   // maximale Querlage beim Selbst-Einparken (experi
     if (now - g.scGeparktSeit < SC_NEUSTART_MS || (g.scNeustarts || 0) >= SC_NEUSTARTS_MAX) return;
     g.scNeustarts = (g.scNeustarts || 0) + 1;
     g.scGeparktSeit = 0;
-    unparkCar(car, 'Safety Car startet neu');
+    unparkCar(car, hdT('Safety Car startet neu'));
   }
   // Ist dieses Auto nah hinter dem Safety Car (hoechstens SC_NAH_KACHELN)?
   function nahAmSafetyCar(car) {
@@ -9318,7 +9345,7 @@ const GHOST_GRID_MAX = 0.9;   // maximale Querlage beim Selbst-Einparken (experi
             + (ah.car ? garageLabel(ah.car) + (verteidigt ? ' verteidigt.' : ' weicht aus.')
                       : 'freie Bahn.'), 'info');
         showHudToast(garageLabel(car).toUpperCase()
-                     + (verteidigt ? ' ATTACKIERT, WIRD GEDECKT' : ' ATTACKIERT'));
+                     + (verteidigt ? hdT(' ATTACKIERT, WIRD GEDECKT') : ' ATTACKIERT'));
       }
     }
     // Der Schub gilt NUR in der Phase 'vorbei': in 'raus' baut sich erst der Versatz auf,
@@ -10405,20 +10432,20 @@ const GHOST_GRID_MAX = 0.9;   // maximale Querlage beim Selbst-Einparken (experi
   function lmPruefen() {
     const fehlt = [];
     if (!currentTrackTiles || currentTrackTiles.length < 3) {
-      fehlt.push('mindestens drei Streckenteile (jetzt '
+      fehlt.push(hdT('mindestens drei Streckenteile (jetzt ')
                  + (currentTrackTiles ? currentTrackTiles.length : 0) + ')');
     }
     if (lmGhosts().length < 2) {
-      fehlt.push('mindestens zwei NPCs (jetzt ' + lmGhosts().length + ')');
+      fehlt.push(hdT('mindestens zwei NPCs (jetzt ') + lmGhosts().length + ')');
     }
-    if (trackMode !== 'on') fehlt.push('Bahn-Modus (jetzt Ausdruck)');
+    if (trackMode !== 'on') fehlt.push(hdT('Bahn-Modus (jetzt Ausdruck)'));
     return fehlt;
   }
 
   function lmStart() {
     const fehlt = lmPruefen();
     if (fehlt.length) {
-      lmSay('Nicht startbar, es fehlt: ' + fehlt.join('; ') + '.');
+      lmSay(hdT('Nicht startbar, es fehlt: ') + fehlt.join('; ') + '.');
       log('Lenkmessung nicht startbar: ' + fehlt.join('; '), 'warn');
       return;
     }
@@ -10429,8 +10456,8 @@ const GHOST_GRID_MAX = 0.9;   // maximale Querlage beim Selbst-Einparken (experi
     lmState.warOff = {};
     lmVersatzSetzen(0);
     lmRender();
-    lmSay('Phase A laeuft: Versatz 0 %. Fahre ' + lmState.rundenZiel
-          + ' Runden, dann schaltet es selbst um.');
+    lmSay(hdT('Phase A laeuft: Versatz 0 %. Fahre ') + lmState.rundenZiel
+          + hdT(' Runden, dann schaltet es selbst um.'));
     log('Lenkmessung gestartet, Phase A (Versatz 0 %).', 'info');
   }
 
@@ -10469,11 +10496,11 @@ const GHOST_GRID_MAX = 0.9;   // maximale Querlage beim Selbst-Einparken (experi
           lmState.phase = 'B';
           lmState.warOff = {};
           lmVersatzSetzen(1);
-          lmSay('Phase B laeuft: Versatz 100 %. Noch ' + lmState.rundenZiel + ' Runden.');
+          lmSay(hdT('Phase B laeuft: Versatz 100 %. Noch ') + lmState.rundenZiel + ' Runden.');
           log('Lenkmessung: Phase B (Versatz 100 %).', 'info');
         } else {
-          lmStop('fertig. Vergleiche die zwei Phasen: aendern sich Abgaenge und '
-                 + 'Rundenzeiten nicht, wertet die Firmware die Lenkung nicht aus.');
+          lmStop(hdT('fertig. Vergleiche die zwei Phasen: aendern sich Abgaenge und ')
+                 + hdT('Rundenzeiten nicht, wertet die Firmware die Lenkung nicht aus.'));
           log('Lenkmessung fertig.', 'ok');
         }
       }
@@ -10492,7 +10519,7 @@ const GHOST_GRID_MAX = 0.9;   // maximale Querlage beim Selbst-Einparken (experi
         const n = d.runden.length;
         const mittel = n ? d.runden.reduce((a, b) => a + b, 0) / n : null;
         const beste = n ? Math.min.apply(null, d.runden) : null;
-        zeilen.push('<tr><td>' + (phase === 'A' ? 'A, Versatz 0 %' : 'B, Versatz 100 %')
+        zeilen.push('<tr><td>' + (phase === 'A' ? hdT('A, Versatz 0 %') : hdT('B, Versatz 100 %'))
           + '</td><td>' + kennung + '</td><td>' + n + '</td><td>'
           + (mittel === null ? '&ndash;' : (mittel / 1000).toFixed(2) + ' s') + '</td><td>'
           + (beste === null ? '&ndash;' : (beste / 1000).toFixed(2) + ' s') + '</td><td>'
@@ -10500,7 +10527,7 @@ const GHOST_GRID_MAX = 0.9;   // maximale Querlage beim Selbst-Einparken (experi
       }
     }
     host.innerHTML = zeilen.length ? zeilen.join('')
-      : '<tr><td colspan="6" class="muted">noch nichts gemessen</td></tr>';
+      : hdT('<tr><td colspan="6" class="muted">noch nichts gemessen</td></tr>');
   }
 
   function lmCsv() {
@@ -10519,7 +10546,7 @@ const GHOST_GRID_MAX = 0.9;   // maximale Querlage beim Selbst-Einparken (experi
         });
       }
     }
-    if (z.length === 1) { lmSay('nichts zu exportieren'); return; }
+    if (z.length === 1) { lmSay(hdT('nichts zu exportieren')); return; }
     const blob = new Blob(['\ufeff' + z.join(String.fromCharCode(13, 10))],
                           { type: 'text/csv;charset=utf-8' });
     const a = document.createElement('a');
@@ -10655,6 +10682,7 @@ const GHOST_GRID_MAX = 0.9;   // maximale Querlage beim Selbst-Einparken (experi
       // ortAbgleich(), damit g.tileIndex schon die neue Kachel ist: mit der alten waere
       // jeder Stempel eine Kachel zu frueh, und der Abstand systematisch falsch.
       ghostKachelZeitNotieren(car);
+      if (typeof hd4KiKachel === 'function') hd4KiKachel(car, now);   // Hybrid Dash 4.0: learn this piece
       // Die Lenkmessung zaehlt hier mit, wo Kachelwechsel und Rundenschluss ohnehin
       // durchlaufen. Ein eigener Zeitgeber waere ein zweiter Ort fuer dieselbe Zaehlung.
       lmTick(car, lmRundeVoll);
@@ -10708,9 +10736,9 @@ const GHOST_GRID_MAX = 0.9;   // maximale Querlage beim Selbst-Einparken (experi
             + (reifenNot ? ' \u2013 ' + reifenName(reifenPassend()) + 'reifen.' : '.'),
             'info');
         showHudToast(garageLabel(car).toUpperCase()
-                     + (reifenNot ? ' HOLT ' + reifenName(reifenPassend()).toUpperCase()
+                     + (reifenNot ? hdT(' HOLT ') + reifenName(reifenPassend()).toUpperCase()
                                     + 'REIFEN'
-                                  : ' IN DIE BOX'));
+                                  : hdT(' IN DIE BOX')));
       }
     }
 
@@ -10919,7 +10947,7 @@ const GHOST_GRID_MAX = 0.9;   // maximale Querlage beim Selbst-Einparken (experi
             else if (now - g.recoverStuckSince > GHOST_RECOVER_STUCK_MS) {
               log(garageLabel(car) + ': Rückweg abgebrochen, kein Vorankommen (vermutlich '
                   + 'ein Hindernis).', 'err');
-              parkCar(car, 'Bahn verlassen');
+              parkCar(car, hdT('Bahn verlassen'));
             }
           } else {
             g.recoverStuckSince = 0;
@@ -10927,10 +10955,10 @@ const GHOST_GRID_MAX = 0.9;   // maximale Querlage beim Selbst-Einparken (experi
         } else {
           log(garageLabel(car) + ': Rückweg nach ' + ((g.recoverStart ? g.recoverUntil - g.recoverStart : GHOST_RECOVER_MS) / 1000)
               + ' s nicht gefunden.', 'err');
-          parkCar(car, 'Bahn verlassen');
+          parkCar(car, hdT('Bahn verlassen'));
         }
       } else {
-        parkCar(car, 'Bahn verlassen');
+        parkCar(car, hdT('Bahn verlassen'));
       }
     } else if (g.recoverUntil) {
       // parken ist nicht (mehr) noetig, waehrend ein Versuch lief - der Rueckweg hat
@@ -10998,6 +11026,8 @@ const GHOST_GRID_MAX = 0.9;   // maximale Querlage beim Selbst-Einparken (experi
         target = Math.max(0.05, Math.min(1, target * learnFactors(car).pace));
         target *= ghostStreuFaktor(car);
       }
+      // Hybrid Dash 4.0: the driver brain - track knowledge, rivals, human traits (98zd-hd4-ki.js).
+      if (typeof hd4KiTempo === 'function') target = Math.max(0.05, Math.min(1, target * hd4KiTempo(car, now, dt)));
       // Gelbe Flagge: alle auf denselben Wert, und zwar bevor irgendetwas anderes daran
       // dreht. Gleiches Tempo fuer alle heisst von selbst "kein Ueberholen".
       const underYellow = flagState !== 'green';
@@ -12381,9 +12411,9 @@ const GHOST_GRID_MAX = 0.9;   // maximale Querlage beim Selbst-Einparken (experi
   // Meldung von Anfang an. Derselbe Name wie am Knopf im Streckeneditor ("3-stufig",
   // data-linemodel="dreistufig", 00-index.head.html).
   const LINIENMODELL_NAME = {
-    curvature: 'Kr\u00fcmmung', laptime: 'Rundenzeit', lateapex: 'Late Apex',
-    dreistufig: '3-stufig', mitte: 'Fahrbahnmitte', innen3: 'Innen (gemittelt)',
-    aussenin: 'Außen-Innen', luuke: 'Luuke-Linie', simulator: 'SIMULATOR',
+    curvature: hdT('Kr\u00fcmmung'), laptime: hdT('Rundenzeit'), lateapex: 'Late Apex',
+    dreistufig: hdT('3-stufig'), mitte: hdT('Fahrbahnmitte'), innen3: hdT('Innen (gemittelt)'),
+    aussenin: hdT('Außen-Innen'), luuke: hdT('Luuke-Linie'), simulator: 'SIMULATOR',
   };
 
   // ---- Die gewaehlte Linie zeigen, direkt neben der Wahl ----
@@ -12562,9 +12592,9 @@ const GHOST_GRID_MAX = 0.9;   // maximale Querlage beim Selbst-Einparken (experi
     const blind = garage.filter(c => c.role === 'ghost' && !c.lastCodeAt);
     if (blind.length && ghostCfg.needCode) {
       const msg = blind.length === n
-        ? 'NPCs stehen: kein Streckencode gelesen. Optionen \u2192 "NPC braucht '
-          + 'Streckencode" ausschalten, dann fahren sie auch ohne gedruckte Strecke.'
-        : blind.length + ' von ' + n + ' NPCs stehen: kein Streckencode gelesen.';
+        ? hdT('NPCs stehen: kein Streckencode gelesen. Optionen \u2192 "NPC braucht ')
+          + hdT('Streckencode" ausschalten, dann fahren sie auch ohne gedruckte Strecke.')
+        : blind.length + ' von ' + n + hdT(' NPCs stehen: kein Streckencode gelesen.');
       log(msg, 'err');
       showHudToast('NPC OHNE STRECKENCODE');
     }
@@ -12615,11 +12645,22 @@ const GHOST_GRID_MAX = 0.9;   // maximale Querlage beim Selbst-Einparken (experi
       pool.forEach((p) => { if (best && (p.timestamp || 0) > (best.timestamp || 0)) best = p; });
       return { p1: best, p2: null, p3: null };
     }
-    const a = sortiert[0] || null;
-    const b = sortiert.length > 1 ? sortiert[1] : null;
-    // Das dritte Pad faehrt Spieler 3 (v0.9.17). Tauschen dreht nur 1 und 2 um.
-    const c = sortiert.length > 2 ? sortiert[2] : null;
-    return padTauschen && a && b ? { p1: b, p2: a, p3: c } : { p1: a, p2: b, p3: c };
+    // Hybrid Dash 4.0: every player slot gets a pad. The controller lobby (98zi-hd4-lokal.js) may
+    // pin a controller to a player; everyone else takes the remaining pads in browser order.
+    const fest = typeof hd4PadFest === 'function' ? hd4PadFest(sortiert) : null;
+    const out = {};
+    const frei = sortiert.slice();
+    if (fest) {
+      for (let nr = 1; nr <= SPIELER_MAX; nr++) {
+        // a pinned controller that is switched off leaves its player without a pad (null):
+        // no other controller may take over that car
+        if (nr in fest) { out['p' + nr] = fest[nr] || null; const i = frei.indexOf(fest[nr]); if (i >= 0) frei.splice(i, 1); }
+      }
+    }
+    for (let nr = 1; nr <= SPIELER_MAX; nr++) {
+      if (out['p' + nr] === undefined) out['p' + nr] = frei.length ? frei.shift() : null;
+    }
+    return out;
   }
 
   // ---- Die Bedienung der Kachel "2 Spieler" ---------------------------------------
@@ -12641,22 +12682,22 @@ const GHOST_GRID_MAX = 0.9;   // maximale Querlage beim Selbst-Einparken (experi
       const spieler = padsFuerSpieler();
       // Der NAME und nicht nur die Zahl: wer zwei verschiedene Pads anschliesst, will
       // sehen, welches welches ist - "Controller 1" sagt darueber nichts.
-      const nenn = (pad) => pad ? String(pad.id).slice(0, 40) : 'keiner';
+      const nenn = (pad) => pad ? String(pad.id).slice(0, 40) : hdT('keiner');
       padZeile.textContent = sortiert.length === 0
-        ? 'Kein Controller erkannt.'
-        : 'Auto 1: ' + nenn(spieler.p1) + ' — Auto 2: ' + nenn(spieler.p2)
-          + (spieler.p3 || zusatzPlatz(3).car ? ' — Auto 3: ' + nenn(spieler.p3) : '')
-          + (sortiert.length === 1 ? ' (nur ein Controller erkannt)' : '');
+        ? hdT('Kein Controller erkannt.')
+        : hdT('Auto 1: ') + nenn(spieler.p1) + hdT(' — Auto 2: ') + nenn(spieler.p2)
+          + (spieler.p3 || zusatzPlatz(3).car ? hdT(' — Auto 3: ') + nenn(spieler.p3) : '')
+          + (sortiert.length === 1 ? hdT(' (nur ein Controller erkannt)') : '');
     }
     const autoZeile = $('zwei-autos');
     if (autoZeile) {
-      const eins = playerCar ? garageLabel(playerCar) : 'keins';
-      const zwei = playerCar2 ? garageLabel(playerCar2) : 'keins';
-      const drei = zusatzPlatz(3).car ? ' — Auto 3: ' + garageLabel(zusatzPlatz(3).car) : '';
+      const eins = playerCar ? garageLabel(playerCar) : hdT('keins');
+      const zwei = playerCar2 ? garageLabel(playerCar2) : hdT('keins');
+      const drei = zusatzPlatz(3).car ? hdT(' — Auto 3: ') + garageLabel(zusatzPlatz(3).car) : '';
       autoZeile.textContent = zweiSpieler
-        ? 'Auto 1: ' + eins + ' — Auto 2: ' + zwei + drei
-          + (playerCar2 ? '' : ' (in der Garage einem Auto die Rolle "Spieler 2" geben)')
-        : 'Der Modus ist aus.';
+        ? hdT('Auto 1: ') + eins + hdT(' — Auto 2: ') + zwei + drei
+          + (playerCar2 ? '' : hdT(' (in der Garage einem Auto die Rolle "Spieler 2" geben)'))
+        : hdT('Der Modus ist aus.');
     }
   }
 
@@ -12936,8 +12977,8 @@ const GHOST_GRID_MAX = 0.9;   // maximale Querlage beim Selbst-Einparken (experi
       // ankommt und woher - als Knopf oder als Achse.
       const dl = ['up', 'down', 'left', 'right'].filter(d => padDpad(pad, d));
       const asBtn = [12, 13, 14, 15].some(i => padButtonPressed(pad, i));
-      padText('pad-live-dpad', dl.length ? dl.join('+') + (asBtn ? ' (Knopf)' : ' (Achse)')
-        : (pad.buttons.length > 15 ? 'nichts' : 'nichts, Pad hat nur ' + pad.buttons.length + ' Knoepfe'));
+      padText('pad-live-dpad', dl.length ? dl.join('+') + (asBtn ? hdT(' (Knopf)') : hdT(' (Achse)'))
+        : (pad.buttons.length > 15 ? hdT('nichts') : hdT('nichts, Pad hat nur ') + pad.buttons.length + hdT(' Knoepfe')));
       padText('pad-live-axes', (pad.axes || []).length + ': '
         + [...(pad.axes || [])].map(v => v.toFixed(1)).join(' '));
       // Welche Knopfnummern gerade gedrueckt sind (v0.8.41): damit sich bei einem Controller

@@ -2612,7 +2612,7 @@
       if (st.driveMode === 'reverse') {
         if (direction > 0 && stopped) {
           st.driveMode = 'neutral'; st.speedKmh = 0; st.neutralRpm = 0;
-          this.meldung('Leerlauf'); this.ruck(0.3, 0.2, 90, 'schalt');
+          this.meldung(hdT('Leerlauf')); this.ruck(0.3, 0.2, 90, 'schalt');
           this.schaltTon(1);
         }
         return;
@@ -2623,7 +2623,7 @@
           st.driveMode = 'forward'; st.currentGear = 0; st.neutralRpm = 0;
           st.isShifting = true;
           st.shiftLeft = cfg.shiftMs / 1000;
-          this.meldung('1. Gang'); this.ruck(0.15, 0.1, 40, 'schalt');
+          this.meldung(hdT('1. Gang')); this.ruck(0.15, 0.1, 40, 'schalt');
           this.schaltTon(1);
         } else if (stopped) {
           st.driveMode = 'reverse'; st.speedKmh = 0; st.neutralRpm = 0;
@@ -2635,7 +2635,7 @@
 
       if (direction < 0 && st.currentGear === 0) {
         st.driveMode = 'neutral'; st.neutralRpm = 0;
-        this.meldung('Leerlauf'); this.ruck(0.2, 0.12, 60, 'schalt');
+        this.meldung(hdT('Leerlauf')); this.ruck(0.2, 0.12, 60, 'schalt');
         this.schaltTon(-1);
         return;
       }
@@ -2833,7 +2833,7 @@
                   : (akt && akt.type ? [akt.type] : []);
       return {
         name: String(p.id || '').slice(0, 40),
-        mapping: p.mapping || '(keine Zuordnung)',
+        mapping: p.mapping || hdT('(keine Zuordnung)'),
         ruettler: !!(akt && typeof akt.playEffect === 'function'),
         arten,
       };

@@ -515,9 +515,10 @@
   // v0.9.43: 3 angezeigte km/h im Modelltempo (siehe raceMoveErkannt) - vorher 3 Modell-km/h,
   // also 75 % der Hoechstgeschwindigkeit, und damit wurde praktisch kein Fruehstart erkannt.
   const FRUEHSTART_KMH = 3 / REAL_SCALE, FRUEHSTART_STRAFE_MS = 2000, FRUEHSTART_BREMSE = 0.6;
-  const fruehstart = { 1: { frueh: false, warten: false, bis: 0 }, 2: { frueh: false, warten: false, bis: 0 },
-                      3: { frueh: false, warten: false, bis: 0 } };
-  const FRUEH_SPIELER = [1, 2, 3];
+  // Hybrid Dash 4.0: one entry per player slot (SPIELER_MAX), not a fixed three.
+  const FRUEH_SPIELER = Array.from({ length: SPIELER_MAX }, (_, i) => i + 1);
+  const fruehstart = {};
+  FRUEH_SPIELER.forEach((w) => { fruehstart[w] = { frueh: false, warten: false, bis: 0 }; });
   let fruehstartTimer = null;
   function fruehstartTempo(w) {
     try { return Math.abs(motorVon(w).state.speedKmh || 0); } catch (e) { return 0; }
@@ -959,7 +960,7 @@
     if (!garage.some(c => c === playerCar) && raceLapTimes.length) {
       // Ohne Garage gibt es kein Geraet und damit keine Farbe: dann bleibt das Feld leer,
       // statt eine zu erfinden.
-      out.unshift({ name: 'Spielerauto', role: 'player', farbe: null, kennung: null,
+      out.unshift({ name: hdT('Spielerauto'), role: 'player', farbe: null, kennung: null,
                     laps: raceLapTimes, sektoren: sectorHistory });
     }
     return out;
@@ -1346,7 +1347,7 @@
         return '<div class="muted" style="font-size:11px; margin-top:2px">'
              + stuecke + '</div>';
       };
-      const head = '<tr style="background:var(--panel-2)"><th style="' + td + '">Runde</th>'
+      const head = '<tr style="background:var(--panel-2)"><th style="' + td + hdT('">Runde</th>')
         + cars.map(c => `<th style="${tdr}">${ergDot(c)}${c.name}</th>`).join('') + '</tr>';
       let body = '';
       for (let k = 0; k < maxLaps; k++) {
@@ -1502,8 +1503,8 @@
     if (cars.length < 1 || maxLap < 2) {
       // Der Punkt nach "Verlauf" fehlte - die beiden Bruchstuecke wurden ohne
       // Satzzeichen aneinandergehaengt, und im Dokument stand "Verlauf Ab der zweiten".
-      host.innerHTML = '<p class="muted" style="margin:0">Zu wenige Runden f\u00fcr einen Verlauf. '
-                     + 'Ab der zweiten Runde wird hier gezeichnet.</p>';
+      host.innerHTML = hdT('<p class="muted" style="margin:0">Zu wenige Runden f\u00fcr einen Verlauf. ')
+                     + hdT('Ab der zweiten Runde wird hier gezeichnet.</p>');
       return;
     }
 
@@ -1528,7 +1529,7 @@
     const y = p => padT + ((p - 1) / Math.max(1, cars.length - 1)) * plotH;
 
     let svg = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px; height:auto" `
-            + `role="img" aria-label="Position \u00fcber die Runden">`;
+            + hdT(`role="img" aria-label="Position \u00fcber die Runden">`);
     // Horizontal guide per position, labelled on the left.
     for (let p = 1; p <= cars.length; p++) {
       svg += `<line x1="${padL}" y1="${y(p).toFixed(1)}" x2="${W - padR}" y2="${y(p).toFixed(1)}" `
@@ -2585,6 +2586,8 @@
     // Meisterschaft (73-meisterschaft.js): wertet, sobald alle im Ziel sind, und zeigt danach
     // den Zwischenstand. Das normale Ergebnis kommt trotzdem zuerst.
     if (typeof meisterRennenEnde === 'function') meisterRennenEnde(willAuslaufen);
+    // Hybrid Dash 4.0: career scoring, car statistics.
+    if (typeof hd4RennenEnde === 'function') { try { hd4RennenEnde(willAuslaufen); } catch (e) { /* extras */ } }
     // Online-Streckenzeiten (72c-strecken-online.js): nicht fuer Challenges, die haben eigene Listen.
     if (typeof skSitzungEnde === 'function' && !(typeof challengeLaeuft === 'function' && challengeLaeuft())) skSitzungEnde();
     if (typeof challengeRennenEnde === 'function' && challengeRennenEnde(willAuslaufen)) { /* erledigt */ }
@@ -2933,7 +2936,7 @@
     input.value = next;
     input.dispatchEvent(new Event('input', { bubbles: true }));
     showHudToast(next === 0 ? 'TANKSIMULATION AUS'
-                            : 'TANKSIMULATION ' + next.toFixed(1) + ' %/S');
+                            : hdT('TANKSIMULATION ') + next.toFixed(1) + ' %/S');
   }
 
   function toggleDamageSim() {
@@ -2967,7 +2970,7 @@
     if (cur !== 0) tyreLastNonZero = cur;
     input.value = next;
     input.dispatchEvent(new Event('input', { bubbles: true }));
-    showHudToast(next === 0 ? 'Reifensimulation aus' : `Reifensimulation ${Math.round(next * 100)} %`);
+    showHudToast(next === 0 ? 'Reifensimulation aus' : `${hdT('Reifensimulation')} ${Math.round(next * 100)} %`);
   };
   let tyreLastNonZero = 0;
 
@@ -3015,7 +3018,7 @@
       // "Rennen abbrechen", ohne dass sichtbar war, dass ueberhaupt etwas laeuft - ein Druck
       // in dieser Zeit brach still ab, und das sah aus wie "der Knopf tut nichts".
       a.textContent = raceState === 'countdown'
-        ? 'Countdown … abbrechen'
+        ? hdT('Countdown … abbrechen')
         : (live ? 'Rennen abbrechen' : 'Rennen starten');
       a.classList.toggle('warn', live);
     }
@@ -3065,38 +3068,38 @@
     // that silently held less than the screen would be worse than none.
     const cars = raceAllCars().filter(c => c.laps.length);
     const num = (ms) => (ms / 1000).toFixed(3).replace('.', ',');
-    const header = 'Auto;Kennung;Rolle;Runde;Zeit (s)';
+    const header = hdT('Auto;Kennung;Rolle;Runde;Zeit (s)');
     const lines = [];
     cars.forEach(c => c.laps.forEach(l =>
       lines.push(`${c.name};${c.kennung || '-'};${c.role || '-'};${l.lap};${num(l.ms)}`)));
     // Summary block underneath, matching the statistics column for column.
     lines.push('');
-    lines.push('Auto;Kennung;Runden;Beste (s);Mittel (s);Schlechteste (s);Streuung (s)');
+    lines.push(hdT('Auto;Kennung;Runden;Beste (s);Mittel (s);Schlechteste (s);Streuung (s)'));
     cars.forEach(c => { const st = raceStats(c.laps);
       lines.push(`${c.name};${c.kennung || '-'};${st.n};${num(st.best)};`
                + `${num(Math.round(st.mean))};`
                + `${num(st.worst)};${num(Math.round(st.sd))}`); });
     // Race conditions, so an exported file can still be understood a month later.
     lines.push('');
-    lines.push('Rennbedingungen;Wert');
-    lines.push(`Modus;${RACE_MODES[raceMode].label}`);
+    lines.push(hdT('Rennbedingungen;Wert'));
+    lines.push(`${hdT('Modus')};${RACE_MODES[raceMode].label}`);
     // Die dritte Kategorie MIT: eine Ausfuhr, die "wechselhaft" als "trocken" auffuehrt,
     // behauptet ueber das gefahrene Rennen etwas Falsches.
-    lines.push(`Wetter zu Beginn;${raceWxStart === 'rain' ? 'Regen'
-      : raceWxStart === 'wechsel' ? 'wechselhaft' : 'trocken'}`);
-    lines.push(`Wetterwechsel;${raceWxStart === 'wechsel' ? 'laufend'
-      : raceWxChange ? 'ja' : 'nein'}`);
-    lines.push(`Tank beim Start (l);${raceFuelStartL}`);
+    lines.push(`${hdT('Wetter zu Beginn')};${raceWxStart === 'rain' ? hdT('Regen')
+      : raceWxStart === 'wechsel' ? hdT('wechselhaft') : hdT('trocken')}`);
+    lines.push(`${hdT('Wetterwechsel')};${raceWxStart === 'wechsel' ? hdT('laufend')
+      : raceWxChange ? hdT('ja') : hdT('nein')}`);
+    lines.push(`${hdT('Tank beim Start (l)')};${raceFuelStartL}`);
     // On/off track goes into the export because it is the one figure that says whether the
     // lap times above describe driving on a track at all.
-    lines.push(`Zeit auf der Strecke (s);${num(Math.round(trackTimeOn * 1000))}`);
-    lines.push(`Zeit abseits (s);${num(Math.round(trackTimeOff * 1000))}`);
-    lines.push(`Anteil abseits (%);${(trackTimeOn + trackTimeOff > 0
+    lines.push(`${hdT('Zeit auf der Strecke (s)')};${num(Math.round(trackTimeOn * 1000))}`);
+    lines.push(`${hdT('Zeit abseits (s)')};${num(Math.round(trackTimeOff * 1000))}`);
+    lines.push(`${hdT('Anteil abseits (%)')};${(trackTimeOn + trackTimeOff > 0
       ? (trackTimeOff / (trackTimeOn + trackTimeOff) * 100) : 0).toFixed(1).replace('.', ',')}`);
-    lines.push(`Pflichtboxenstopps;${racePitRequired}`);
-    lines.push(`Davon gefahren;${racePitDone}`);
-    lines.push(`Strafe je verpasstem Stopp (s);${racePitPenaltyS}`);
-    lines.push(`Strafe gesamt (s);${num(racePenaltyMs())}`);
+    lines.push(`${hdT('Pflichtboxenstopps')};${racePitRequired}`);
+    lines.push(`${hdT('Davon gefahren')};${racePitDone}`);
+    lines.push(`${hdT('Strafe je verpasstem Stopp (s)')};${racePitPenaltyS}`);
+    lines.push(`${hdT('Strafe gesamt (s)')};${num(racePenaltyMs())}`);
     const csv = [header, ...lines].join('\r\n') + '\r\n';
     const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -3148,7 +3151,7 @@
       const host = $('tile-timeline');
       if (!host) return;
       if (!tileTimeline.length) {
-        host.innerHTML = '<tr><td colspan="4" class="muted">noch nichts</td></tr>';
+        host.innerHTML = hdT('<tr><td colspan="4" class="muted">noch nichts</td></tr>');
         return;
       }
       const td = 'padding:3px 8px';
@@ -3157,7 +3160,7 @@
         const dauer = Math.max(0, z.bis - z.von);
         // Ein Einzelpaket ist der interessante Fall und wird angeschrieben, statt dass man
         // die Eins in der Spalte suchen muss.
-        const einzeln = z.pakete === 1 ? ' <span class="cm-new">einzeln</span>' : '';
+        const einzeln = z.pakete === 1 ? hdT(' <span class="cm-new">einzeln</span>') : '';
         const zaehler = z.counterVon === z.counterBis
           ? String(z.counterVon)
           : z.counterVon + '\u2013' + z.counterBis;
@@ -3300,7 +3303,7 @@
     const imCockpit = !!document.querySelector('#tab-race.active');
     const badge = $('dash-offtrack');
     if (!imCockpit) {
-      badge.textContent = dashOnMarker ? 'Über Muster' : 'Kein Muster';
+      badge.textContent = dashOnMarker ? hdT('Über Muster') : hdT('Kein Muster');
       badge.style.background = dashOnMarker ? 'rgba(70,209,127,.12)' : 'var(--panel-2)';
       badge.style.borderColor = dashOnMarker ? 'var(--good)' : 'var(--border)';
     }
@@ -3760,8 +3763,8 @@
                      .join(' &middot; ')
                  + (summe !== null ? ' &rarr; ideal ' + formatLapTime(summe) : '')
                  + (summe !== null && besteRunde !== null && besteRunde > summe
-                    ? ' (' + formatLapTime(besteRunde - summe) + ' schneller als die beste '
-                      + 'gefahrene Runde)' : '')
+                    ? ' (' + formatLapTime(besteRunde - summe) + hdT(' schneller als die beste ')
+                      + hdT('gefahrene Runde)') : '')
                  + '</div>');
       sectorHistory.slice(-5).reverse().forEach((r, k) => {
         teile.push('<div class="sess-row"><b>R' + (sectorHistory.length - k) + '</b> '
@@ -4498,6 +4501,8 @@
     // sonst gaebe es zwei Orte fuer dieselbe Zahl, und der zweite gewaenne beim naechsten
     // Reglerklick.
     motor.config.tyreWearMix = mischungWert(mix, 'verschleiss');
+    // Hybrid Dash 4.0: tyre cliff, flat spot and track evolution are layered over this base grip.
+    if (typeof hd4GripNach === 'function') hd4GripNach(motor);
   }
 
   function applySurface() {
@@ -4809,7 +4814,10 @@
       if (typeof pitSpielMalen === 'function') rennZeitTimeout(pitSpielMalen, 0);
     }
     if (pitState === next) return;
+    const hd4Vorher = pitState;
     pitState = next;
+    // Hybrid Dash 4.0: pit entry speed check, sequential crew, flat spots and failures serviced.
+    if (typeof hd4PitZustand === 'function') { try { hd4PitZustand(hd4Vorher, next); } catch (e) { /* never block the pit lane */ } }
     // Die Variante 'double' nennt ausdruecklich 60 km/h, die anderen fahren mit den
     // 80 km/h der Boxengasse. Beide Faktoren werden HIER gewaehlt, damit es weiter genau
     // eine Stelle gibt, an der das Boxenlimit gesetzt wird.
@@ -4941,7 +4949,7 @@
       pitDoubleFirstAt = 0;
       // 0 Runden: die erste Ueberfahrt war schon gezaehlt und angesagt, sie wird jetzt
       // zurueckgenommen (Nutzerentscheid: "sofort ansagen, dann zuruecknehmen").
-      if (pitDoubleRunden === 0) retractLap('doppelter Start-Ausdruck, Boxeneinfahrt');
+      if (pitDoubleRunden === 0) retractLap(hdT('doppelter Start-Ausdruck, Boxeneinfahrt'));
       pitDoubleArmedUntil = jetzt + PIT_DOUBLE_LIMIT_MS;
       setPitState('limited');
       // Nur HIER abbrechen: eine noch laufende Rundenansage der ersten Ueberfahrt soll der
@@ -5042,8 +5050,8 @@
           if (fuel >= ziel - 0.05) {
             fuel = ziel; pitDone.refuel = true;
             setPitLoop('fuel', false); pitChimeFuel();
-            showHudToast(ziel >= 100 ? `Tank voll, ${fuelLiters(100)} l`
-                                     : `Getankt auf ${fuelLiters(ziel)} l`);
+            showHudToast(ziel >= 100 ? `${hdT('Tank voll,')} ${fuelLiters(100)} l`
+                                     : `${hdT('Getankt auf')} ${fuelLiters(ziel)} l`);
           }
         }
       }
@@ -5072,7 +5080,8 @@
 
       const allDone = pitPlanEmpty(p)
         ? pitEmptyElapsed >= (pitNurStrafe ? ZEV_STRAFE_STAND_S : PIT_EMPTY_STOP_S)
-        : (!p.refuel || pitDone.refuel) && (!p.tyres || pitDone.tyres) && (!p.repair || pitDone.repair);
+        : (!p.refuel || pitDone.refuel) && (!p.tyres || pitDone.tyres) && (!p.repair || pitDone.repair)
+          && (typeof hd4PitBereit !== 'function' || hd4PitBereit(pitStandElapsed));   // Hybrid Dash 4.0: crew in sequence
 
       // Rammstrafe (v0.9.21): ZUSAETZLICH zur Arbeit im Stand, ab dem Moment, wo alles fertig ist.
       if (allDone && !pitReady) {
@@ -5127,6 +5136,8 @@
       while (d > 0.05 && sek < 120) { d -= Math.max(0.01, repairRateAt(d)) * 0.05; sek += 0.05; }
       t = Math.max(t, sek);
     }
+    const hd4Dauer = typeof hd4PitDauer === 'function' ? hd4PitDauer(pl) : null;   // Hybrid Dash 4.0: crew in sequence
+    if (hd4Dauer !== null) return hd4Dauer + rammStrafeOffen(playerCar);
     return Math.max(PIT_EMPTY_STOP_S, t) + rammStrafeOffen(playerCar);
   }
   function pitSpielStart() {
@@ -5937,6 +5948,7 @@
   }
 
   function registerCrash(wer, stoss) {
+    if (typeof hd4Vorfall === 'function') { try { hd4Vorfall('crash', wer || 1, stoss); } catch (e) { /* 4.0 extras never block a crash */ } }
     const zPl = wer >= 2 ? zusatzPlatz(wer) : null;
     // BESTELLT (v0.9.21): Bremsen und Schaden getrennt schaltbar, und kein Bremsen fuer den,
     // auf den von hinten aufgefahren wurde.
@@ -5983,7 +5995,7 @@
       licht[end] = true;
       log(pre + (end === 'front' ? 'Frontschaden: Scheinwerfer ausgefallen.'
                                  : 'Heckschaden: Rueckleuchten ausgefallen.'), 'err');
-      showHudToast(pre + (end === 'front' ? 'SCHEINWERFER AUS' : 'RUECKLEUCHTEN AUS'));
+      showHudToast(pre + (end === 'front' ? hdT('SCHEINWERFER AUS') : 'RUECKLEUCHTEN AUS'));
       // Die Kontrollleuchten im Cockpit gehoeren Auto 1. Fuer Auto 2 steht der Zustand auf
       // seinem eigenen Schirm.
       if (!zwei) updateLightTellTales();
@@ -6019,7 +6031,7 @@
     // Rueckmeldung gibt es genug - Schadensbalken, Geraeusch, Rumble, Protokoll -, nur nicht
     // auf dem Rennschirm. Also dort eine Meldung.
     showHudToast(pre + (geschont ? (vonHinten ? t('AUFFAHRUNFALL') : t('SEITLICH GETROFFEN')) : 'CRASH')
-                 + (schadenAn ? ' · SCHADEN ' + Math.round(stand) + ' %' : ''));
+                 + (schadenAn ? hdT(' · SCHADEN ') + Math.round(stand) + ' %' : ''));
     log(pre + 'Crash erkannt (Stoss ' + richtung + ')' + (geschont ? ', gerammt: kein Bremsen' : '')
         + (schadenAn ? `, Schaden +${Math.round(100 / crashesToTotal)}%.` : ', ohne Schaden.'), 'err');
   }
@@ -6327,7 +6339,7 @@
     const el2 = $('dash-real-ratio');
     if (sim > 5 && realSpeedKmh > 0.05) {
       const f = sim / realSpeedKmh;
-      el2.textContent = '(simuliert ' + Math.round(sim) + ', Faktor ' + f.toFixed(0) + ', soll 50)';
+      el2.textContent = hdT('(simuliert ') + Math.round(sim) + hdT(', Faktor ') + f.toFixed(0) + hdT(', soll 50)');
       el2.style.color = Math.abs(f - 50) > 15 ? 'var(--warn)' : '';
     } else {
       el2.textContent = '';
@@ -6339,7 +6351,7 @@
     const el = $('dash-light-dmg');
     if (el) {
       el.textContent = lightDamage.front && lightDamage.rear ? 'VORN + HINTEN DEFEKT'
-                     : lightDamage.front ? 'SCHEINWERFER DEFEKT'
+                     : lightDamage.front ? hdT('SCHEINWERFER DEFEKT')
                      : lightDamage.rear ? 'RUECKLEUCHTEN DEFEKT' : '';
     }
     // The cockpit headlight symbol goes dark and says why, instead of claiming the lights
@@ -6347,10 +6359,10 @@
     const lamp = $('race-light');
     if (lamp) {
       lamp.style.opacity = lightDamage.front ? '0.25' : '';
-      lamp.setAttribute('aria-label', lightDamage.front ? 'Scheinwerfer defekt' : 'Scheinwerfer');
+      lamp.setAttribute('aria-label', lightDamage.front ? hdT('Scheinwerfer defekt') : 'Scheinwerfer');
       const box = $('race-light-box');
       if (box) box.title = lightDamage.front
-        ? 'Scheinwerfer defekt \u2013 geht unter ' + LIGHT_DEAD_DAMAGE + ' % Schaden wieder'
+        ? hdT('Scheinwerfer defekt \u2013 geht unter ') + LIGHT_DEAD_DAMAGE + hdT(' % Schaden wieder')
         : 'Licht an/aus';
     }
   }
@@ -6383,7 +6395,7 @@
     on.textContent = mmss(trackTimeOn);
     off.textContent = mmss(trackTimeOff);
     const tot = trackTimeOn + trackTimeOff;
-    sh.textContent = tot > 1 ? '(' + Math.round(trackTimeOff / tot * 100) + ' % abseits)' : '';
+    sh.textContent = tot > 1 ? '(' + Math.round(trackTimeOff / tot * 100) + hdT(' % abseits)') : '';
     // Coloured only once it is worth looking at. A single lost packet is not a cut.
     off.style.color = tot > 5 && trackTimeOff / tot > 0.1 ? 'var(--warn)' : '';
   }
@@ -6434,7 +6446,8 @@
       const dt = Math.max(0, Math.min(0.5, (now - fuelLastTickTime) / 1000));
       const fuelBefore = fuel;
       // zevVerbrauch: 2 bei einem Tank-Leck (Zufallsevents), sonst 1 - ein Array-Zugriff je Takt.
-      fuel = Math.max(0, fuel - Math.abs(throttle) * dt * fuelDrainPerSec * zevVerbrauch[1]);
+      fuel = Math.max(0, fuel - Math.abs(throttle) * dt * fuelDrainPerSec * zevVerbrauch[1]
+                            * (typeof hd4Verbrauch === 'function' ? hd4Verbrauch(1, throttle) : 1));   // Hybrid Dash 4.0: engine map, throttle burn
       // Edge-triggered: without this it would rumble again on every 45ms heartbeat.
       if (fuelBefore > 0 && fuel <= 0) {
         padRumble(0.2, 0.12, 160, 'meldung');
@@ -6470,7 +6483,8 @@
       // dieselbe Sache - und ungleiche Regeln waeren schlimmer als keine, das ist die
       // Zusage, unter der dieser Modus gebaut ist.
       z.tank.stand = Math.max(0, z.tank.stand
-                                   - Math.abs(throttle) * dt * fuelDrainPerSec * zevVerbrauch[z.nr]);
+                                   - Math.abs(throttle) * dt * fuelDrainPerSec * zevVerbrauch[z.nr]
+                                     * (typeof hd4Verbrauch === 'function' ? hd4Verbrauch(z.nr, throttle) : 1));
       // Flankengetriggert, wie bei Auto 1: ohne das brummte es in jedem 45-ms-Takt neu.
       if (vorher > 0 && z.tank.stand <= 0) {
         padRumble(0.2, 0.12, 160, 'meldung', z.nr);
@@ -6550,6 +6564,8 @@
     out *= 1 - (schaden / 100) * 0.3;
     if (schaden >= 100) out *= 0.5;
     out = derbyRuckeln(wer || 1, out);
+    // Hybrid Dash 4.0: engine map (Rich/Standard/Lean), failures, wing drag.
+    if (typeof hd4Leistung === 'function') out *= hd4Leistung(wer || 1);
     // ...except it did not. Empty tank AND total damage multiplied down to 0.0525, well
     // below minMoveThrottle (0.16), which is the byte range where the car twitches instead
     // of moving: the same dead band that caused the crawling near standstill, reached by a
@@ -7412,7 +7428,7 @@
       const b = (typeof bindings === 'object' && bindings && bindings.yellowflag)
         ? bindingDescription(bindings.yellowflag) : t('nicht belegt');
       fuss.textContent = lang === 'de'
-        ? 'Steuerkreuz hoch/runter waehlt · ' + b + ' schaltet' + (raceScreenLimitArmed ? ' · links/rechts einstellen' : '')
+        ? 'Steuerkreuz hoch/runter waehlt · ' + b + ' schaltet' + (raceScreenLimitArmed ? hdT(' · links/rechts einstellen') : '')
         : 'D-pad up/down selects · ' + b + ' switches' + (raceScreenLimitArmed ? ' · left/right adjusts' : '');
     }
   }
@@ -7992,16 +8008,16 @@
                               rennZeitTimeout(() => playTone(1320, 0.26, 'square', 0.20), 120); }
 
   function describePitPlan(p) {
-    if (pitPlanEmpty(p)) return `nur ${PIT_EMPTY_STOP_S.toFixed(0)} s Standzeit`;
+    if (pitPlanEmpty(p)) return `${hdT('nur')} ${PIT_EMPTY_STOP_S.toFixed(0)} s ${hdT('Standzeit')}`;
     const parts = [];
     // Wieviel getankt wird, gehoert in die Meldung: "tanken" allein laesst offen, ob der
     // Stopp vier oder zwei Sekunden dauert, und genau das ist die Entscheidung dahinter.
     if (p.refuel) {
       const z = tankZielNorm(p.refuel);
-      parts.push(z >= 100 ? 'tanken' : 'tanken auf ' + fuelLiters(z) + ' l');
+      parts.push(z >= 100 ? hdT('tanken') : hdT('tanken auf ') + fuelLiters(z) + ' l');
     }
-    if (p.tyres) parts.push('Reifen');
-    if (p.repair) parts.push('reparieren');
+    if (p.tyres) parts.push(hdT('Reifen'));
+    if (p.repair) parts.push(hdT('reparieren'));
     return parts.join(' + ');
   }
 

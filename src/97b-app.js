@@ -29,8 +29,8 @@
     // v0.9.6, der Rueckfall wird also nicht mehr gebraucht.
     {
       const info = $('app-apk-link');
-      a.href = 'https://github.com/mokamit/Hybrid-Dash-3.0/releases/latest/download/HybridDash.apk';
-      if (info) info.href = 'https://github.com/mokamit/Hybrid-Dash-3.0/releases/latest';
+      a.href = 'https://github.com/mokamit/Hybrid-Dash-4.0/releases/latest/download/HybridDash.apk';
+      if (info) info.href = 'https://github.com/mokamit/Hybrid-Dash-4.0/releases/latest';
     }
     a.hidden = false;
   })();
@@ -165,7 +165,7 @@
         const s = await upd('stand');
         if ($('app-stand-web')) $('app-stand-web').textContent = webVersion()
           + (s.eingebaut ? ' (' + t('mitgeliefert') + ')' : ' (' + t('geladen') + ')');
-        if ($('app-stand-apk')) $('app-stand-apk').textContent = s.apkVersion + ' · Stufe ' + s.apkStufe;
+        if ($('app-stand-apk')) $('app-stand-apk').textContent = s.apkVersion + hdT(' · Stufe ') + s.apkStufe;
         if ($('app-stand-quelle')) $('app-stand-quelle').textContent = s.quelle;
         if (s.zurueckgerollt) {
           // Nicht noch einmal anbieten, bis eine NOCH neuere Fassung da ist.

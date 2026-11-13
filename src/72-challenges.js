@@ -540,7 +540,7 @@
         return { gueltig: false, zeit: null, grund: 'Pflichtstopp fehlt' };
       }
       if (gueltig.length < def.runden) {
-        return { gueltig: false, zeit: null, grund: 'nicht genug gültige Runden' };
+        return { gueltig: false, zeit: null, grund: hdT('nicht genug gültige Runden') };
       }
       return { gueltig: true, zeit: gueltig.slice(0, def.runden).reduce((a, b) => a + b, 0), grund: '' };
     }

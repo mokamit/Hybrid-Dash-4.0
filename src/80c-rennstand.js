@@ -238,7 +238,9 @@
   }
 
   function rennstandSpielerNr(role) {
-    return role === 'player' ? 1 : role === 'player2' ? 2 : role === 'player3' ? 3 : 0;
+    if (role === 'player') return 1;
+    const m = /^player([2-9])$/.exec(role || '');   // Hybrid Dash 4.0: players 2-8
+    return m ? Number(m[1]) : 0;
   }
 
   function rennstandClipFolge(rows, runde, ergebnis = false) {
@@ -649,7 +651,7 @@
     } catch (err) {
       if (token === rennstandTestGeneration) {
         rennstandTestSetBusy(false);
-        rennstandTestStatus('Test fehlgeschlagen: ' + err.message);
+        rennstandTestStatus(hdT('Test fehlgeschlagen: ') + err.message);
       }
       log('Rennstand-Test fehlgeschlagen: ' + err.message, 'info');
       return false;

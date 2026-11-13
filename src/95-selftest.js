@@ -8196,7 +8196,7 @@
       const h = a[0].getAttribute('href');
       if (h.indexOf('https://') !== 0) schlecht.push('Kurzlink nicht https: ' + h);
       // HybridDash: the cockpit link points to this fork's own page instead of OmegaSim's short link.
-      if (h.indexOf('mokamit.github.io/Hybrid-Dash-3.0') < 0) schlecht.push('Kurzlink zeigt woanders: ' + h);
+      if (h.indexOf('mokamit.github.io/Hybrid-Dash-4.0') < 0) schlecht.push('Kurzlink zeigt woanders: ' + h);
       if ((a[0].getAttribute('rel') || '').indexOf('noopener') < 0) schlecht.push('rel ohne noopener');
       if (a[0].getAttribute('target') !== '_blank') schlecht.push('kein target=_blank');
       // Das Omega kommt per <use> aus dem Kopfzeilen-Logo. Fehlt der Pfad, bleibt ein
@@ -11201,7 +11201,7 @@
     //    tun ist. Stillschweigend die bekannten Felder zu nehmen waere schlimmer: man
     //    haette dann einen halben Stand und keinen Hinweis darauf.
     if (!f.neuereFassung) fehler.push('neuere Fassung wird angenommen');
-    if (f.neuereFassung && !/aktualisieren/i.test(f.neuereFassung)) {
+    if (f.neuereFassung && !/aktualisieren|update/i.test(f.neuereFassung)) {
       fehler.push('neuere Fassung ohne Handlungshinweis: ' + f.neuereFassung);
     }
     // 3. Ein Wert ausserhalb des Reglerbereichs wird gemeldet und NICHT still auf die
@@ -11459,7 +11459,8 @@
     // Ebene 1 (oben neben dem Logo, von jeder Seite aus) und die Kacheln des Fahren-Schirms
     // (JS-Knoepfe, hier von Hand genannt). Der Titel fuehrt nach Fahren.
     // v1.3.5: der Mehrspieler ist kein Reiter mehr, sondern der Knopf #fa-mp in der Autos-Kachel.
-    const kanten = { home: ['fahren'], fahren: ['garage', 'control', 'track', 'race', 'mp'] };
+    // Hybrid-Dash 4.0: the Career card and the Showroom button (Cars & Drivers card, Garage action bar) are JS buttons too.
+    const kanten = { home: ['fahren'], fahren: ['garage', 'control', 'track', 'race', 'mp', 'hd4-karriere', 'hd4-showroom'] };
     K_EBENE1.forEach((x) => { kanten.fahren.push(x); });
     const tabs = [...document.querySelectorAll('.tabpage')].map((t) => t.id.replace(/^tab-/, ''));
     tabs.forEach((t) => {
@@ -16103,7 +16104,7 @@
     if (!/Nummer 1|number 1|número 1/i.test(ohne.text)) maengel.push('ohne: "Nummer 1" nicht genannt');
     // Und sie muss sagen, dass keine Autos gemerkt sind - auch wenn sonst etwas liegt
     // (Einstellungen zaehlen nicht als Auto).
-    if (!/[Kk]eine? Auto/.test(ohne.text)) maengel.push('ohne: sagt nicht "keine Autos"');
+    if (!/[Kk]eine? Auto|[Nn]o cars/.test(ohne.text)) maengel.push('ohne: sagt nicht "keine Autos"');
     if (ohne.lage.autos.length !== 0) maengel.push('ohne: ' + ohne.lage.autos.length + ' Autos');
     // 3.
     if (namenlos.lage.autos.length !== 1) {
@@ -16600,7 +16601,7 @@
     if (!window.OMEGA_TEST || !OMEGA_TEST.garagenZeileProbe) {
       return { skip: true, mass: 'garagenZeileProbe nicht vorhanden' };
     }
-    const SOLL = ['player', 'player2', 'player3', 'safetycar', 'reinig', 'ghost', 'none'];
+    const SOLL = ['player', 'player2', 'player3', 'player4', 'player5', 'player6', 'player7', 'player8', 'safetycar', 'reinig', 'ghost', 'none'];   // Hybrid Dash 4.0: eight player slots
     const aus = OMEGA_TEST.garagenZeileProbe({ zwei: false });
     const an = OMEGA_TEST.garagenZeileProbe({ zwei: true, role: 'player2' });
     const maengel = [];
@@ -25279,6 +25280,9 @@
     const rows = $('st-rows');
     $('st-run').disabled = true;
     $('st-status').textContent = 'laeuft …';
+    // Hybrid Dash 4.0: these tests check the base physics and race rules to exact numbers. The 4.0
+    // strategy layers stand still while they run and have their own test (HYBRIDDASH4.selbsttest()).
+    if (typeof hd4Sim !== 'undefined' && hd4Sim) hd4Sim.testPause = true;
     // ?st=Teilstring laesst nur passende Tests laufen (v0.9.43, zum gezielten Nachpruefen).
     let nur = null;
     try { nur = new URLSearchParams(location.search).get('st'); } catch (e) { nur = null; }
@@ -25329,6 +25333,7 @@
       await stLuft();
     }
     if (parkEl && parkMerk !== null) parkEl.value = parkMerk;
+    if (typeof hd4Sim !== 'undefined' && hd4Sim) hd4Sim.testPause = false;
     $('st-run').disabled = false;
     $('st-status').textContent = gut + ' ok, ' + schlecht + ' Fehler'
                                 + (offen ? ', ' + offen + ' nicht prüfbar' : '');

@@ -125,11 +125,11 @@
     // three-tile lookahead. Byte 10 = 0x30 came with it but is not the gate for code
     // reporting - 0x60 produced 463 codes in the capture of 19:21.
     rail:    { label: 'Leitplanke: Byte 14 Bit 5', bytes: { 14: LIGHT_HEAD | 0x20 } },
-    raillook:{ label: 'Bit 5 + Vorausblick 01 04 04',
+    raillook:{ label: hdT('Bit 5 + Vorausblick 01 04 04'),
                bytes: { 14: LIGHT_HEAD | 0x20, 16: 0x01, 17: 0x04, 18: 0x04 } },
     rail10:  { label: 'nur Byte 10 = 0x30', bytes: { 10: 0x30 } },
     // What the app writes to its OWN ghosts: byte 10 = 0x20 and byte 15 bit 3.
-    auto:    { label: 'Autonom: b10=0x20, b15=0x0c, Bit 5',
+    auto:    { label: hdT('Autonom: b10=0x20, b15=0x0c, Bit 5'),
                bytes: { 10: 0x20, 14: LIGHT_HEAD | 0x20, 15: 0x0c } },
 
     // ---- VIER VARIANTEN FUER DIE HELLIGKEITSFRAGE, mit gesetztem Lichtbit -----------
@@ -215,16 +215,16 @@
   // cap keeps a forgotten recording from eating the tab.
   const REC_MAX_ROWS = 400000;   // ~2.5 hours at 44 rows/s
   const REC_SECTIONS = [
-    'Gerade: links',
-    'Gerade: mitte',
-    'Gerade: rechts',
-    'Linkskurve',
-    'Rechtskurve',
-    'Haarnadel',
-    'von der Bahn',
-    'Boxengassen-Muster',
-    'still stehen',
-    'aufheben/absetzen',
+    hdT('Gerade: links'),
+    hdT('Gerade: mitte'),
+    hdT('Gerade: rechts'),
+    hdT('Linkskurve'),
+    hdT('Rechtskurve'),
+    hdT('Haarnadel'),
+    hdT('von der Bahn'),
+    hdT('Boxengassen-Muster'),
+    hdT('still stehen'),
+    hdT('aufheben/absetzen'),
   ];
   const rec = { on: false, rows: [], t0: 0, next: 0 };
 
@@ -234,8 +234,8 @@
     rec.rows.push({ t: Math.round(performance.now() - rec.t0), dir, name,
                     b: bytes ? Array.from(bytes) : null, note: note || '' });
   }
-  function recNotify(bytes, name) { recRow('rx', name || 'Spielerauto', bytes); }
-  function recWrite(bytes, name) { recRow('tx', name || 'Spielerauto', bytes); }
+  function recNotify(bytes, name) { recRow('rx', name || hdT('Spielerauto'), bytes); }
+  function recWrite(bytes, name) { recRow('tx', name || hdT('Spielerauto'), bytes); }
 
   function recMark(label) {
     if (!rec.on) { showHudToast('Keine Aufnahme läuft'); return; }

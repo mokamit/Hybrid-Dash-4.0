@@ -294,7 +294,7 @@
         }
       }
     }
-    if (runden.length < SIM_RUNDEN) return { ok: false, grund: 'kommt nicht ins Ziel', zeit: Infinity, runden };
+    if (runden.length < SIM_RUNDEN) return { ok: false, grund: hdT('kommt nicht ins Ziel'), zeit: Infinity, runden };
     const fliegend = runden.slice(1);
     // Wo der Plan unter die Leseschwelle muesste, faehrt ein Ghost trotzdem 35 % - und fliegt
     // dort eher ab. Das kostet die Linie eine halbe Sekunde je Runde.

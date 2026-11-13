@@ -66,7 +66,7 @@
       // haette es mitgeloescht. Der Fehler faellt beim Lesen nicht auf, weil eine
       // Zuweisung an textContent harmlos aussieht.
       const t = $('race-act-scan-txt');
-      if (t) t.textContent = rail ? 'Bahn' : 'Ausdruck';
+      if (t) t.textContent = rail ? hdT('Bahn') : hdT('Ausdruck');
       // Die Ausdruck-Stellung ist die ungewoehnliche und die, in der das Auto sich nicht
       // selbst haelt. Sie wird angeschrieben, damit man nicht versehentlich darin faehrt.
       b.classList.toggle('warn', !rail);
@@ -86,7 +86,7 @@
           + 'Bahn, liest aber keine gedruckten Muster.'
         : 'Leseart: gedruckte Muster (Byte 14 Bit 7). Nur hier werden Ausdrucke gelesen, '
           + 'dafuer haelt sich das Auto nicht selbst auf der Bahn.', 'info');
-    showHudToast(rail ? 'LIEST BAHN' : 'LIEST AUSDRUCK');
+    showHudToast(rail ? hdT('LIEST BAHN') : hdT('LIEST AUSDRUCK'));
   });
 
   // Der Fahrmodus im Cockpit. Er schaltet durch die Voreinstellungen und ruft
@@ -602,18 +602,18 @@
         out.textContent = 'Messstand nicht vorhanden.';
         return;
       }
-      out.textContent = 'Vollgas geradeaus, ohne zu lenken \u2026';
+      out.textContent = hdT('Vollgas geradeaus, ohne zu lenken \u2026');
       const r = await OMEGA_TEST.driftProbe(4000);
       if (!r.mitTempo) {
         out.textContent = t('Das Auto ist nicht gefahren – ohne Fahrt gibt es kein Drehsignal, Byte 3 schwankt erst dann.');
         return;
       }
       const teile = [
-        r.mitTempo + ' von ' + r.punkte + ' Messpunkten mit Tempo',
-        r.geradeaus + ' davon ohne Lenkeingabe',
-        'Drehsignal geradeaus: ' + (r.gyroGeradeaus === null ? '\u2013' : r.gyroGeradeaus),
-        'insgesamt: ' + (r.gyroInsgesamt === null ? '\u2013' : r.gyroInsgesamt),
-        'Massstab: ' + (r.spanEnde === null ? '\u2013' : Math.round(r.spanEnde)),
+        r.mitTempo + hdT(' von ') + r.punkte + hdT(' Messpunkten mit Tempo'),
+        r.geradeaus + hdT(' davon ohne Lenkeingabe'),
+        hdT('Drehsignal geradeaus: ') + (r.gyroGeradeaus === null ? '\u2013' : r.gyroGeradeaus),
+        hdT('insgesamt: ') + (r.gyroInsgesamt === null ? '\u2013' : r.gyroInsgesamt),
+        hdT('Massstab: ') + (r.spanEnde === null ? '\u2013' : Math.round(r.spanEnde)),
       ];
       // KEIN URTEIL. Ob 0,3 viel ist, entscheidet das Auto auf dem Teppich; diese Zeile
       // sagt nur, was gemessen wurde.
@@ -873,13 +873,13 @@
       if (!sw) return;
       sw.checked = !sw.checked;
       sw.dispatchEvent(new Event('change', { bubbles: true }));
-      showHudToast(sw.checked ? 'AUTOMATIK' : 'MANUELL, I UND K ODER PAD');
+      showHudToast(sw.checked ? 'AUTOMATIK' : hdT('MANUELL, I UND K ODER PAD'));
     });
   }
 
   $('setting-autoshift').addEventListener('change', (e) => {
     physEngine.config.autoShift = e.target.checked;
-    showHudToast(e.target.checked ? 'Automatikgetriebe' : 'Manuelles Getriebe');
+    showHudToast(e.target.checked ? 'Automatikgetriebe' : hdT('Manuelles Getriebe'));
   });
 
   // All three feed the launch model, so each one has to re-solve the calibration.
@@ -944,18 +944,18 @@
                                          strongMagnitude: 0.6, weakMagnitude: 0.4 }) : 0;
       const teile = [];
       if (!lage.pads.length) {
-        teile.push('Kein Controller gemeldet. Eine Taste dr\u00fccken \u2013 der Browser '
-                   + 'zeigt einen Controller erst, wenn er einmal benutzt wurde.');
+        teile.push(hdT('Kein Controller gemeldet. Eine Taste dr\u00fccken \u2013 der Browser ')
+                   + hdT('zeigt einen Controller erst, wenn er einmal benutzt wurde.'));
       } else {
         for (const p of lage.pads) {
           teile.push(p.name + ' \u00b7 ' + p.mapping + ' \u00b7 '
-                     + (p.ruettler ? 'R\u00fcttler: ' + (p.arten.length ? p.arten.join(', ')
-                                                                        : 'ohne Angabe')
-                                   : 'kein R\u00fcttler'));
+                     + (p.ruettler ? hdT('R\u00fcttler: ') + (p.arten.length ? p.arten.join(', ')
+                                                                        : hdT('ohne Angabe'))
+                                   : hdT('kein R\u00fcttler')));
         }
       }
-      if (!lage.hauptschalter) teile.push('Hauptschalter steht AUS \u2013 nichts gesendet.');
-      else teile.push('Stoss an ' + stoss + ' von ' + lage.pads.length + ' gesendet.');
+      if (!lage.hauptschalter) teile.push(hdT('Hauptschalter steht AUS \u2013 nichts gesendet.'));
+      else teile.push(hdT('Stoss an ') + stoss + hdT(' von ') + lage.pads.length + hdT(' gesendet.'));
       out.textContent = teile.join(' | ');
       log('R\u00fcttelprobe: ' + teile.join(' | '), 'info');
     });
@@ -998,10 +998,10 @@
     const lage = vibrationLage();
     if (!lage.pads.length) { el.textContent = t('noch kein Controller gemeldet'); return; }
     el.textContent = lage.pads.map((p) => {
-      if (!p.ruettler) return p.name + ': kein R\u00fcttler';
+      if (!p.ruettler) return p.name + hdT(': kein R\u00fcttler');
       const kann = p.arten.indexOf('trigger-rumble') >= 0;
-      return p.name + ': ' + (kann ? 'Trigger m\u00f6glich'
-                                   : 'keine Trigger (' + (p.arten.join(', ') || 'ohne Angabe') + ')');
+      return p.name + ': ' + (kann ? hdT('Trigger m\u00f6glich')
+                                   : hdT('keine Trigger (') + (p.arten.join(', ') || hdT('ohne Angabe')) + ')');
     }).join(' | ');
   }
   triggerLageZeigen();
@@ -1051,7 +1051,7 @@
     // Groesse, um die es beim Halten eines Tempos geht.
     const viertel = Math.round(100 * Math.pow(0.25, g));
     $('setting-throttle-gamma-val').textContent =
-      g.toFixed(2) + (nah ? ' linear' : ' \u00b7 \u00bc Weg = ' + viertel + '%');
+      g.toFixed(2) + (nah ? ' linear' : hdT(' \u00b7 \u00bc Weg = ') + viertel + '%');
     kennlinienPlotZeichnen('setting-throttle-gamma-plot', (x) => gasKennlinie(x, g), 0, 1);
   }
   // LENKKENNLINIE, und der Plot zeigt jetzt, was das AUTO bekommt.
@@ -1124,7 +1124,7 @@
     const nah = Math.abs(g - 1) < 0.001;
     const viertel = Math.round(100 * Math.pow(0.25, g));
     $('setting-brake-gamma-val').textContent =
-      g.toFixed(2) + (nah ? ' linear' : ' \u00b7 \u00bc Weg = ' + viertel + '%');
+      g.toFixed(2) + (nah ? ' linear' : hdT(' \u00b7 \u00bc Weg = ') + viertel + '%');
     kennlinienPlotZeichnen('setting-brake-gamma-plot', (x) => gasKennlinie(x, g), 0, 1);
   }
 
@@ -2185,12 +2185,12 @@
         const offen = [];
         if (z3.tank.stand < 100 - 0.05) offen.push('tankt');
         if (z3.schaden.wert > 0.05) offen.push('repariert');
-        fuss.textContent = z3.box.fertig ? 'P3 Boxenstopp: fertig, losfahren!'
-          : 'P3 Boxenstopp: ' + (offen.join(', ') || 'Standzeit laeuft');
+        fuss.textContent = z3.box.fertig ? hdT('P3 Boxenstopp: fertig, losfahren!')
+          : hdT('P3 Boxenstopp: ') + (offen.join(', ') || hdT('Standzeit laeuft'));
       }
     } else if (fuss) {
       if (!zweiSpieler) {
-        fuss.textContent = 'Der 2-Spieler-Modus ist aus \u2013 rechts steht nichts.';
+        fuss.textContent = hdT('Der 2-Spieler-Modus ist aus \u2013 rechts steht nichts.');
       } else if (!car2) {
         fuss.textContent = t('In der Garage einem Auto die Rolle "Spieler 2" geben.');
       } else if (lage === 'angefordert') {
@@ -2204,10 +2204,10 @@
         if (tankZweiStand() < 100 - 0.05) offen.push('tankt');
         if (schadenVon(2) > 0.05) offen.push('repariert');
         fuss.textContent = boxZweiFertig()
-          ? 'P2 Boxenstopp: fertig, losfahren!'
-          : 'P2 Boxenstopp: ' + (offen.join(', ') || 'Standzeit laeuft');
+          ? hdT('P2 Boxenstopp: fertig, losfahren!')
+          : hdT('P2 Boxenstopp: ') + (offen.join(', ') || hdT('Standzeit laeuft'));
       } else {
-        fuss.textContent = drei ? 'Boxenstopp: jede Spalte f\u00fcr ihr Auto.'
+        fuss.textContent = drei ? hdT('Boxenstopp: jede Spalte f\u00fcr ihr Auto.')
           : 'Boxenstopp: links f\u00fcr Auto 1, rechts f\u00fcr Auto 2.';
       }
     }
@@ -2234,19 +2234,19 @@
     if (ton1) {
       const sel1 = $('sound-profile');
       const opt1 = sel1 ? sel1.options[sel1.selectedIndex] : null;
-      ton1.textContent = opt1 ? motorNamen(opt1) : 'Motor';
+      ton1.textContent = opt1 ? motorNamen(opt1) : hdT('Motor');
     }
     const ton = $('vgl-act-sound-txt');
     if (ton) {
       const sel2 = $('sound-profile-2');
       const opt = sel2 ? sel2.options[sel2.selectedIndex] : null;
-      ton.textContent = opt ? motorNamen(opt) : 'Motor';
+      ton.textContent = opt ? motorNamen(opt) : hdT('Motor');
     }
     const ton3 = $('vgl3-act-sound-txt');
     if (ton3 && drei) {
       const sel3 = $('sound-profile-3');
       const opt3 = sel3 ? sel3.options[sel3.selectedIndex] : null;
-      ton3.textContent = opt3 ? motorNamen(opt3) : 'Motor';
+      ton3.textContent = opt3 ? motorNamen(opt3) : hdT('Motor');
     }
   }
 
@@ -2769,7 +2769,7 @@
     // v1.0.40: sagen, wenn ein Direktweg der APK fehlt (und warum, soweit bekannt).
     const fehlt = ob ? (ob.direkt ? '' : ' · ' + t('Direktweg fehlt') + (ob.neuVersucht ? ' (' + t('nach Neuladen') + ')' : ''))
       + (ob.pad ? '' : ' · ' + t('Pad direkt fehlt')) + (ob.direktFehler ? ' · ' + ob.direktFehler : '') : '';
-    el.textContent = (s ? Math.round(s.mittel) + ' / ' + Math.round(s.p95) + ' ms' + nurJs + (s.haenger ? ' · ' + s.haenger + '× hing' : '')
+    el.textContent = (s ? Math.round(s.mittel) + ' / ' + Math.round(s.p95) + ' ms' + nurJs + (s.haenger ? ' · ' + s.haenger + hdT('× hing') : '')
       : t('noch keine Befehle')) + weg + fehlt + ersetzt + br + takt + pad + ton + (wv ? ' · WebView ' + wv : '');
   }, 1000);
   // ---- DIE EIGENE POSITION IM COCKPIT (v1.1.40) ---------------------------------------
@@ -3685,6 +3685,8 @@
     pacejkaRueckmeldung(physEngine, 1);
     // Telemetrie: etwa 10 Proben je Sekunde (Tempo, Gas, Bremse, Gang, Lenkung).
     if (typeof teleProbe === 'function') teleProbe(rawThrottle, rawBrake);
+    // Hybrid Dash 4.0: lock-up / flat-spot detection, throttle clock, thermal load.
+    if (typeof hd4SimEingabe === 'function') hd4SimEingabe(1, rawThrottle, rawBrake, dt);
     // v1.1.3: Fahrstil-Kennwerte (97b-fahrstil.js), nur selbst gefahren - nicht unter dem Autopiloten.
     if (typeof fahrstilTakt === 'function' && !apVorher) fahrstilTakt(rawThrottle, rawBrake, steer, dt);
     // Nur die LICHTER hier - sie gehen ins Paket. Das Cockpit malt cockpitNachSenden() nach
@@ -3964,23 +3966,23 @@
   // brief/low-power on the forward-motion steps so the whole run fits a small area.
   const CALIB_MATRIX = [
     { label: 'Neutral (Baseline)', steer: 0, throttle: 0, ms: 1000 },
-    { label: 'Lenkung 25% rechts (Stand)', steer: 0.25, throttle: 0, ms: 600 },
-    { label: 'Lenkung 50% rechts (Stand)', steer: 0.5, throttle: 0, ms: 600 },
-    { label: 'Lenkung 75% rechts (Stand)', steer: 0.75, throttle: 0, ms: 600 },
-    { label: 'Lenkung 100% rechts (Stand)', steer: 1.0, throttle: 0, ms: 600 },
+    { label: hdT('Lenkung 25% rechts (Stand)'), steer: 0.25, throttle: 0, ms: 600 },
+    { label: hdT('Lenkung 50% rechts (Stand)'), steer: 0.5, throttle: 0, ms: 600 },
+    { label: hdT('Lenkung 75% rechts (Stand)'), steer: 0.75, throttle: 0, ms: 600 },
+    { label: hdT('Lenkung 100% rechts (Stand)'), steer: 1.0, throttle: 0, ms: 600 },
     { label: 'Neutral', steer: 0, throttle: 0, ms: 500 },
-    { label: 'Lenkung 25% links (Stand)', steer: -0.25, throttle: 0, ms: 600 },
-    { label: 'Lenkung 50% links (Stand)', steer: -0.5, throttle: 0, ms: 600 },
-    { label: 'Lenkung 75% links (Stand)', steer: -0.75, throttle: 0, ms: 600 },
-    { label: 'Lenkung 100% links (Stand)', steer: -1.0, throttle: 0, ms: 600 },
+    { label: hdT('Lenkung 25% links (Stand)'), steer: -0.25, throttle: 0, ms: 600 },
+    { label: hdT('Lenkung 50% links (Stand)'), steer: -0.5, throttle: 0, ms: 600 },
+    { label: hdT('Lenkung 75% links (Stand)'), steer: -0.75, throttle: 0, ms: 600 },
+    { label: hdT('Lenkung 100% links (Stand)'), steer: -1.0, throttle: 0, ms: 600 },
     { label: 'Neutral', steer: 0, throttle: 0, ms: 500 },
-    { label: 'Mini-Schub vorwärts, geradeaus', steer: 0, throttle: 0.15, ms: 700 },
+    { label: hdT('Mini-Schub vorwärts, geradeaus'), steer: 0, throttle: 0.15, ms: 700 },
     { label: 'Neutral', steer: 0, throttle: 0, ms: 500 },
-    { label: 'Mini-Schub vorwärts + 50% rechts', steer: 0.5, throttle: 0.15, ms: 700 },
+    { label: hdT('Mini-Schub vorwärts + 50% rechts'), steer: 0.5, throttle: 0.15, ms: 700 },
     { label: 'Neutral', steer: 0, throttle: 0, ms: 500 },
-    { label: 'Mini-Schub vorwärts + 50% links', steer: -0.5, throttle: 0.15, ms: 700 },
+    { label: hdT('Mini-Schub vorwärts + 50% links'), steer: -0.5, throttle: 0.15, ms: 700 },
     { label: 'Neutral', steer: 0, throttle: 0, ms: 500 },
-    { label: 'Sanfte Bremse (30%)', steer: 0, throttle: -0.3, ms: 500 },
+    { label: hdT('Sanfte Bremse (30%)'), steer: 0, throttle: -0.3, ms: 500 },
     { label: 'Neutral', steer: 0, throttle: 0, ms: 600 },
     { label: 'Gas-Vergleich: 15% (Ratter-Test)', steer: 0, throttle: 0.15, ms: 1000 },
     { label: 'Neutral', steer: 0, throttle: 0, ms: 500 },
@@ -3988,7 +3990,7 @@
     { label: 'Neutral', steer: 0, throttle: 0, ms: 500 },
     { label: 'Gas-Vergleich: 50% (Ratter-Test)', steer: 0, throttle: 0.50, ms: 1000 },
     { label: 'Neutral', steer: 0, throttle: 0, ms: 600 },
-    { label: 'Drehung auf der Stelle (Vollausschlag rechts, wenig Gas)', steer: 1.0, throttle: 0.15, ms: 2000 },
+    { label: hdT('Drehung auf der Stelle (Vollausschlag rechts, wenig Gas)'), steer: 1.0, throttle: 0.15, ms: 2000 },
     { label: 'Neutral (Ende)', steer: 0, throttle: 0, ms: 800 },
   ];
 
@@ -4024,7 +4026,7 @@
 
   async function runCalibration() {
     const rxEntry = charByUuid.get(NUS_RX);
-    if (!rxEntry) { alert('Nicht verbunden / NUS RX nicht gefunden.'); return; }
+    if (!rxEntry) { alert(hdT('Nicht verbunden / NUS RX nicht gefunden.')); return; }
     try { await ensureCalibNotifySubscribed(); } catch (err) { alert(err.message); return; }
 
     calibRunning = true;
@@ -4097,11 +4099,11 @@
   function refreshMacroList() {
     const store = loadMacroStore();
     const sel = $('macro-list');
-    sel.innerHTML = '<option value="">-- gespeicherte Fahrten --</option>';
+    sel.innerHTML = hdT('<option value="">-- gespeicherte Fahrten --</option>');
     Object.keys(store).forEach(name => {
       const opt = document.createElement('option');
       opt.value = name;
-      opt.textContent = `${name} (${store[name].length} Schritte)`;
+      opt.textContent = `${name} (${store[name].length} ${hdT('Schritte')})`;
       sel.appendChild(opt);
     });
   }
@@ -4112,14 +4114,14 @@
   $('btn-record').onclick = () => {
     if (playing) return;
     recording = !recording;
-    $('btn-record').textContent = recording ? 'Aufnahme stoppen' : 'Aufnahme starten';
+    $('btn-record').textContent = recording ? hdT('Aufnahme stoppen') : 'Aufnahme starten';
     $('btn-record').classList.toggle('primary', !recording);
     if (recording) {
       macro = [];
       recordStartTime = rennZeitJetzt();
-      $('record-status').textContent = 'nimmt auf…';
+      $('record-status').textContent = hdT('nimmt auf…');
     } else {
-      $('record-status').textContent = `bereit (${macro.length} Schritte aufgezeichnet)`;
+      $('record-status').textContent = `${hdT('bereit')} (${macro.length} ${hdT('Schritte aufgezeichnet')})`;
     }
     $('btn-play').disabled = macro.length === 0 || recording;
   };
@@ -4181,7 +4183,7 @@
 
   $('btn-save-macro').onclick = () => {
     const name = $('macro-name').value.trim();
-    if (!name) { alert('Bitte einen Namen für die Aufnahme eingeben.'); return; }
+    if (!name) { alert(hdT('Bitte einen Namen für die Aufnahme eingeben.')); return; }
     if (macro.length === 0) { alert('Keine Aufnahme vorhanden.'); return; }
     const store = loadMacroStore();
     store[name] = macro;
@@ -4197,7 +4199,7 @@
     if (!store[name]) return;
     macro = store[name];
     $('macro-name').value = name;
-    $('record-status').textContent = `geladen: "${name}" (${macro.length} Schritte)`;
+    $('record-status').textContent = `${hdT('geladen:')} "${name}" (${macro.length} ${hdT('Schritte')})`;
     $('btn-play').disabled = macro.length === 0 || recording;
   };
 
@@ -4255,11 +4257,11 @@
       if (!Array.isArray(parsed)) throw new Error('Ungültiges Format');
       macro = parsed;
       $('macro-name').value = file.name.replace(/\.json$/i, '');
-      $('record-status').textContent = `importiert: ${macro.length} Schritte`;
+      $('record-status').textContent = `${hdT('importiert:')} ${macro.length} ${hdT('Schritte')}`;
       $('btn-play').disabled = macro.length === 0 || recording;
       log(`Aufnahme aus ${file.name} importiert (${macro.length} Schritte).`, 'info');
     } catch (err) {
-      alert('Import fehlgeschlagen: ' + err.message);
+      alert(hdT('Import fehlgeschlagen: ') + err.message);
     }
     e.target.value = '';
   };
@@ -4398,7 +4400,7 @@
       });
       labLog('TX abonniert.');
       $('lab-subscribe').disabled = true;
-      $('lab-subscribe').textContent = 'TX abonniert';
+      $('lab-subscribe').textContent = hdT('TX abonniert');
     } catch (err) {
       labLog('Notify-Fehler: ' + err.message);
     }

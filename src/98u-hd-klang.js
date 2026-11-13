@@ -58,7 +58,7 @@
     if (!zeile || document.getElementById('hd-klang-an')) return;
     const r = document.createElement('div');
     r.className = 'opt-row hd-row';
-    r.innerHTML = '<span class="opt-label">Klarerer Motorklang</span>'
+    r.innerHTML = hdT('<span class="opt-label">Klarerer Motorklang</span>')
       + '<label class="tgl"><input type="checkbox" id="hd-klang-an"' + (hdKlangAn ? ' checked' : '') + '><span></span></label>';
     zeile.parentNode.insertBefore(r, zeile.nextSibling);
     r.querySelector('input').addEventListener('change', (e) => {

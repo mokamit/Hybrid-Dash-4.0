@@ -66,7 +66,7 @@
       // Zugestaendnis an das fehlende Modell, keine Nachbildung.
       gewaehlt: { pipe: 17, pulse: 2.2, decay: 95, drive: 2.0, clatter: 0.08,
                   scatter: 0.009, intake: 0.42, load: 1 } },
-    { id: 'm4gt3', name: 'BMW M4 GT3', motor: 'P58 3.0 Reihensechser, Twin-Turbo',
+    { id: 'm4gt3', name: 'BMW M4 GT3', motor: hdT('P58 3.0 Reihensechser, Twin-Turbo'),
       cyl: 6, layout: 'inline', crank: 'even', rpm: 7200,
       order: [1, 5, 3, 6, 2, 4], banking: 'half', lader: true,
       // Ein Reihensechser hat einen Kruemmer und zuendet alle 120 Grad. Deshalb klingt er
@@ -174,9 +174,9 @@
     // einen gesperrten Wert anzeigt, luegt ueber das, was gerechnet wird.
     if (noCross && mwEl('crank').value === 'cross') mwEl('crank').value = 'even';
     const grund = c.layout === 'inline'
-      ? 'Ein Reihenmotor hat nur eine Bank, also keine ungleichen Baenke.'
-      : 'Cross-Plane braucht Zylinder paarweise je Bank, also eine durch vier teilbare'
-        + ' Zahl (8 oder 12).';
+      ? hdT('Ein Reihenmotor hat nur eine Bank, also keine ungleichen Baenke.')
+      : hdT('Cross-Plane braucht Zylinder paarweise je Bank, also eine durch vier teilbare')
+        + hdT(' Zahl (8 oder 12).');
     mwEl('crank').title = noCross ? grund : '';
     const hw = mwEl('crank-note');
     if (hw) hw.textContent = noCross ? grund : '';
@@ -461,7 +461,7 @@
            + '" text-anchor="middle" font-size="9" font-weight="700" fill="#14161c">'
            + (mwOrderActive(c) ? mwPreset.order[i] : i + 1) + '</text>';
     }
-    return '<svg viewBox="0 0 ' + W + ' ' + H + '" aria-label="Z\u00fcndfolge">'
+    return '<svg viewBox="0 0 ' + W + ' ' + H + hdT('" aria-label="Z\u00fcndfolge">')
          + '<rect x="' + L + '" y="' + T + '" width="' + (W - L - R) + '" height="'
          + (H - T - 22) + '" fill="#14161c"/>' + out
          + '<text x="' + L + '" y="12" font-size="9.5" fill="#f4f6fb">' + t('Kurbelwinkel, Grad')
@@ -630,9 +630,9 @@
 
   // Die drei Diagramme anklickbar machen. Der Hinweistext ist derselbe, der klein
   // darunter steht - gross gelesen hilft er mehr.
-  for (const [id, titel] of [['fire', 'Z\u00fcndfolge \u00fcber 720\u00b0'],
-                             ['pulse', 'Ein Z\u00fcndimpuls mit Nachhall'],
-                             ['spec', 'Resonanz des Rohrs']]) {
+  for (const [id, titel] of [['fire', hdT('Z\u00fcndfolge \u00fcber 720\u00b0')],
+                             ['pulse', hdT('Ein Z\u00fcndimpuls mit Nachhall')],
+                             ['spec', hdT('Resonanz des Rohrs')]]) {
     const e = document.getElementById('mw-chart-' + id);
     if (!e) continue;
     e.addEventListener('click', () => {
@@ -651,9 +651,9 @@
 
   async function mwListen() {
     if (mwBusy) return;
-    if (!audioCtx) { mwSay('Ton ist aus, erst oben einschalten.'); return; }
+    if (!audioCtx) { mwSay(hdT('Ton ist aus, erst oben einschalten.')); return; }
     mwBusy = true;
-    mwSay('rechnet \u2026');
+    mwSay(hdT('rechnet \u2026'));
     try {
       const out = await mwRender();
       const buf = audioCtx.createBuffer(1, out.data.length, MW_SR);
@@ -668,9 +668,9 @@
       src.start();
       g.gain.setTargetAtTime(engineVolume, audioCtx.currentTime, 0.05);
       mwNodes = { src, gain: g };
-      mwSay('l\u00e4uft: ' + out.seconds.toFixed(2) + ' s Schleife');
+      mwSay(hdT('l\u00e4uft: ') + out.seconds.toFixed(2) + hdT(' s Schleife'));
     } catch (err) {
-      mwSay('ging nicht: ' + err.message);
+      mwSay(hdT('ging nicht: ') + err.message);
     }
     mwBusy = false;
   }
@@ -681,7 +681,7 @@
   }
   function mwSlotsWrite(o) {
     try { localStorage.setItem(MW_STORE, JSON.stringify(o)); return true; }
-    catch (e) { mwSay('Speicher voll oder gesperrt.'); return false; }
+    catch (e) { mwSay(hdT('Speicher voll oder gesperrt.')); return false; }
   }
   function mwRefreshSlots() {
     const sel = mwEl('slots');
@@ -735,10 +735,10 @@
   // Adopt: install as a session profile alongside the shipped ones. Not written to a file -
   // the engine IS the twelve numbers, and a rendered file would only be a staler copy.
   mwEl('adopt').addEventListener('click', async () => {
-    if (!audioCtx) { mwSay('Ton ist aus, erst oben einschalten.'); return; }
+    if (!audioCtx) { mwSay(hdT('Ton ist aus, erst oben einschalten.')); return; }
     if (mwBusy) return;
     mwBusy = true;
-    mwSay('rechnet drei B\u00e4nder \u2026');
+    mwSay(hdT('rechnet drei B\u00e4nder \u2026'));
     const keepRpm = mwEl('rpm').value;
     try {
       // Three bands from one setting, by re-rendering at three engine speeds. The
@@ -762,7 +762,7 @@
       // anzeigt. So steht im Dropdown genau, was auch gerechnet wurde.
       const wname = mwOrderActive(c) ? 'mw-' + mwPreset.id : 'werkstatt';
       const wlabel = mwOrderActive(c) ? mwPreset.name + ' (Werkstatt)'
-                                      : 'Werkstatt, selbst gebaut';
+                                      : hdT('Werkstatt, selbst gebaut');
       sampleEngine.buffers[wname] = built;
       const sel = $('sound-profile');
       if (!SAMPLE_CARS.includes(wname)) {
@@ -778,9 +778,9 @@
       // to accept this one, since these buffers were built here and not fetched.
       sampleEngine.ready = true;
       startSampleEngine(wname);
-      mwSay(wlabel + ': im Cockpit h\u00f6rbar, ' + rpms.join(' / ') + '/min');
+      mwSay(wlabel + hdT(': im Cockpit h\u00f6rbar, ') + rpms.join(' / ') + '/min');
     } catch (err) {
-      mwSay('ging nicht: ' + err.message);
+      mwSay(hdT('ging nicht: ') + err.message);
     }
     mwEl('rpm').value = keepRpm;
     mwPaint();
@@ -789,23 +789,23 @@
 
   mwEl('save').addEventListener('click', () => {
     const name = mwEl('name').value.trim();
-    if (!name) { mwSay('Erst einen Namen eintragen.'); return; }
+    if (!name) { mwSay(hdT('Erst einen Namen eintragen.')); return; }
     const all = mwSlots();
     all[name] = mwRead();
     if (!mwSlotsWrite(all)) return;
     mwRefreshSlots();
     mwEl('slots').value = name;
-    mwSay('abgelegt als \u201e' + name + '\u201c');
+    mwSay(hdT('abgelegt als \u201e') + name + '\u201c');
   });
 
   mwEl('load-slot').addEventListener('click', () => {
     const name = mwEl('slots').value;
-    if (!name) { mwSay('Erst einen abgelegten Motor ausw\u00e4hlen.'); return; }
+    if (!name) { mwSay(hdT('Erst einen abgelegten Motor ausw\u00e4hlen.')); return; }
     const cfg = mwSlots()[name];
-    if (!cfg) { mwSay('Nicht gefunden.'); return; }
+    if (!cfg) { mwSay(hdT('Nicht gefunden.')); return; }
     mwWrite(cfg);
     mwEl('name').value = name;
-    mwSay('geladen: \u201e' + name + '\u201c');
+    mwSay(hdT('geladen: \u201e') + name + '\u201c');
     if (mwNodes) mwListen();
   });
 
@@ -813,11 +813,11 @@
   // not a browser confirm(): that blocks the audio thread and stops the loop mid-note.
   mwEl('del-slot').addEventListener('click', () => {
     const name = mwEl('slots').value;
-    if (!name) { mwSay('Erst einen abgelegten Motor ausw\u00e4hlen.'); return; }
+    if (!name) { mwSay(hdT('Erst einen abgelegten Motor ausw\u00e4hlen.')); return; }
     const now = Date.now();
     if (now - mwDelArmed > 4000) {
       mwDelArmed = now;
-      mwSay('Nochmal dr\u00fccken, um \u201e' + name + '\u201c zu l\u00f6schen.');
+      mwSay(hdT('Nochmal dr\u00fccken, um \u201e') + name + hdT('\u201c zu l\u00f6schen.'));
       return;
     }
     mwDelArmed = 0;
@@ -825,20 +825,20 @@
     delete all[name];
     if (!mwSlotsWrite(all)) return;
     mwRefreshSlots();
-    mwSay('gel\u00f6scht: \u201e' + name + '\u201c');
+    mwSay(hdT('gel\u00f6scht: \u201e') + name + '\u201c');
   });
 
   mwEl('export').addEventListener('click', () => {
     mwEl('json').value = JSON.stringify(mwRead());
-    mwSay('Werte hineingeschrieben, jetzt kopieren.');
+    mwSay(hdT('Werte hineingeschrieben, jetzt kopieren.'));
   });
 
   mwEl('import').addEventListener('click', () => {
     const raw = mwEl('json').value.trim();
-    if (!raw) { mwSay('Da steht nichts.'); return; }
+    if (!raw) { mwSay(hdT('Da steht nichts.')); return; }
     let cfg;
-    try { cfg = JSON.parse(raw); } catch (e) { mwSay('Das ist kein JSON.'); return; }
-    if (!cfg || typeof cfg !== 'object') { mwSay('Das ist kein Motor.'); return; }
+    try { cfg = JSON.parse(raw); } catch (e) { mwSay(hdT('Das ist kein JSON.')); return; }
+    if (!cfg || typeof cfg !== 'object') { mwSay(hdT('Das ist kein Motor.')); return; }
     // Validated against the controls rather than trusted: this text is pasted in from a
     // chat window, and a single out-of-range number would render silence with no clue why.
     const bad = [];
@@ -853,9 +853,9 @@
         if (!isFinite(v) || v < +el.min || v > +el.max) bad.push(k + '=' + cfg[k]);
       }
     }
-    if (bad.length) { mwSay('Unbrauchbar: ' + bad.join(', ')); return; }
+    if (bad.length) { mwSay(hdT('Unbrauchbar: ') + bad.join(', ')); return; }
     mwWrite(cfg);
-    mwSay('\u00fcbernommen, jetzt Anh\u00f6ren.');
+    mwSay(hdT('\u00fcbernommen, jetzt Anh\u00f6ren.'));
   });
 
   for (const k of MW_KEYS) {

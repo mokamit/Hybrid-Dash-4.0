@@ -212,10 +212,10 @@
     g += '</svg>';
     host.innerHTML = g;
     $('ps-result-hint').innerHTML =
-      '<b style="color:#1c7a4d">Gr&uuml;n</b> Geschwindigkeit &middot; '
-      + '<b style="color:#8b99b4">grau gestrichelt</b> verlangter Lenkwinkel &middot; '
-      + '<b style="color:#b3131f">rot</b> was die Lenkung daraus macht. Der Abstand zwischen '
-      + 'grau und rot ist die Tr&auml;gheit, genau das, was eine eckige Vorgabe kostet.';
+      hdT('<b style="color:#1c7a4d">Gr&uuml;n</b> Geschwindigkeit &middot; ')
+      + hdT('<b style="color:#8b99b4">grau gestrichelt</b> verlangter Lenkwinkel &middot; ')
+      + hdT('<b style="color:#b3131f">rot</b> was die Lenkung daraus macht. Der Abstand zwischen ')
+      + hdT('grau und rot ist die Tr&auml;gheit, genau das, was eine eckige Vorgabe kostet.');
   }
 
   // ---- Buttons ----
@@ -267,7 +267,7 @@
     const ready = !!(playerCar && playerCar.rx)
                || !!(controlSelect && controlSelect.value && charByUuid.get(controlSelect.value));
     btn.disabled = !ready;
-    st.textContent = ready ? 'bereit' : 'kein Auto verbunden';
+    st.textContent = ready ? hdT('bereit') : hdT('kein Auto verbunden');
   }
   setInterval(psRefreshSendButton, 1500);
 

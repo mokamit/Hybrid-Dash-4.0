@@ -2508,8 +2508,8 @@
     for (let r = 1500; r <= 9000; r += 100) tq.push([r, torqueAt(r)]);
     $('doku-chart-torque').innerHTML = renderLineChart({
       series: [{ points: tq, color: '#5aa9ff' }],
-      xLabel: 'Motordrehzahl (1/min)', yLabel: 'Drehmoment (Faktor)',
-      yMin: 0, yMax: 1.1, ariaLabel: 'Drehmoment über Drehzahl',
+      xLabel: hdT('Motordrehzahl (1/min)'), yLabel: hdT('Drehmoment (Faktor)'),
+      yMin: 0, yMax: 1.1, ariaLabel: hdT('Drehmoment über Drehzahl'),
     });
 
     // 2) Wheel thrust per gear against road speed, and 3) the acceleration that leaves
@@ -2530,7 +2530,7 @@
     });
     const coast = [];
     for (let v = 0; v <= cfg.topSpeedKmh; v += cfg.topSpeedKmh / 40) coast.push([v, -e.resistAt(v, A, false)]);
-    accel.push({ points: coast, color: '#a9b2c4', dash: '4 3', width: 1.5, label: 'Rollen' });
+    accel.push({ points: coast, color: '#a9b2c4', dash: '4 3', width: 1.5, label: hdT('Rollen') });
     const brake = [];
     for (let v = 0; v <= cfg.topSpeedKmh; v += cfg.topSpeedKmh / 40) {
       brake.push([v, -(cfg.brakeDecelBase + cfg.brakeDecelAero * (v / cfg.topSpeedKmh))]);
@@ -2538,12 +2538,12 @@
     accel.push({ points: brake, color: '#ff5c5c', dash: '4 3', width: 1.5, label: 'Bremse' });
 
     $('doku-chart-thrust').innerHTML = renderLineChart({
-      series: thrust, xLabel: 'Geschwindigkeit (km/h)', yLabel: 'Radzugkraft (relativ)',
-      yMin: 0, ariaLabel: 'Radzugkraft je Gang über Geschwindigkeit',
+      series: thrust, xLabel: hdT('Geschwindigkeit (km/h)'), yLabel: hdT('Radzugkraft (relativ)'),
+      yMin: 0, ariaLabel: hdT('Radzugkraft je Gang über Geschwindigkeit'),
     });
     $('doku-chart-accel').innerHTML = renderLineChart({
-      series: accel, xLabel: 'Geschwindigkeit (km/h)', yLabel: 'Beschleunigung (km/h pro s)',
-      ariaLabel: 'Beschleunigung je Gang über Geschwindigkeit',
+      series: accel, xLabel: hdT('Geschwindigkeit (km/h)'), yLabel: hdT('Beschleunigung (km/h pro s)'),
+      ariaLabel: hdT('Beschleunigung je Gang über Geschwindigkeit'),
     });
 
     // 4) The launch itself, from the very integrator that solves the 0-auf-Vmax slider.
@@ -2559,20 +2559,20 @@
       $('doku-chart-launch').innerHTML = renderLineChart({
         series: [{ points: v, color: '#5aa9ff', label: 'km/h' },
                  { points: rp, color: '#ff5c5c', dash: '3 3', label: '1000/min' }],
-        xLabel: 'Zeit seit Vollgas (s)', yLabel: 'km/h  bzw.  Drehzahl / 1000',
-        yMin: 0, ariaLabel: 'Geschwindigkeit und Drehzahl über der Zeit',
+        xLabel: hdT('Zeit seit Vollgas (s)'), yLabel: hdT('km/h  bzw.  Drehzahl / 1000'),
+        yMin: 0, ariaLabel: hdT('Geschwindigkeit und Drehzahl über der Zeit'),
       });
     }
 
     $('doku-chart-params').textContent =
-      `Gezeichnet aus den aktuellen Einstellungen: Vmax ${cfg.topSpeedKmh.toFixed(1)} km/h, `
-      + `0-auf-100-Anzeige ${cfg.launchAnchorTimeS.toFixed(1)} s (gemessen ${sim.time.toFixed(2)} s), `
-      + `Ausrollen x${cfg.coastDragPerS.toFixed(2)} auf `
+      `${hdT('Gezeichnet aus den aktuellen Einstellungen: Vmax')} ${cfg.topSpeedKmh.toFixed(1)} km/h, `
+      + `${hdT('0-auf-100-Anzeige')} ${cfg.launchAnchorTimeS.toFixed(1)} s (${hdT('gemessen')} ${sim.time.toFixed(2)} s), `
+      + `${hdT('Ausrollen')} x${cfg.coastDragPerS.toFixed(2)} ${hdT('auf')} `
       + `${cfg.coastRollDecel.toFixed(2)}+${cfg.coastEngineDecel.toFixed(2)}·u`
       + `+${cfg.coastAeroDecel.toFixed(2)}·u², `
-      + `Bremse ${cfg.brakeDecelBase.toFixed(2)}+${cfg.brakeDecelAero.toFixed(2)}·v km/h/s, `
-      + `Kalibrierfaktor ${cfg.accelCalibration.toFixed(3)}. Gangbaender: `
-      + cfg.gears.map((g, i) => `${i + 1}. bis ${(g.topFrac * cfg.topSpeedKmh).toFixed(2)}`).join(', ') + ' km/h.';
+      + `${hdT('Bremse')} ${cfg.brakeDecelBase.toFixed(2)}+${cfg.brakeDecelAero.toFixed(2)}·v km/h/s, `
+      + `${hdT('Kalibrierfaktor')} ${cfg.accelCalibration.toFixed(3)}. ${hdT('Gangbaender:')} `
+      + cfg.gears.map((g, i) => `${i + 1}. ${hdT('bis')} ${(g.topFrac * cfg.topSpeedKmh).toFixed(2)}`).join(', ') + ' km/h.';
     drivetrainChartsDirty = false;
   }
 
@@ -3267,11 +3267,11 @@
     if (o.detailed === undefined) { o.detailed = true; o.ohneLinieRechnen = true; }
     if (o.echt === undefined) o.echt = true;
     if (!tiles || tiles.length === 0) {
-      return { html: '<p class="muted">Keine Streckenteile.</p>', closed: false };
+      return { html: hdT('<p class="muted">Keine Streckenteile.</p>'), closed: false };
     }
     const pts = trackCenterline(tiles);
     if (pts.length < 2) {
-      return { html: '<p class="muted">Keine Streckenteile.</p>', closed: false };
+      return { html: hdT('<p class="muted">Keine Streckenteile.</p>'), closed: false };
     }
     const nrm = trackNormals(pts);
     // Welche Punkte zu welcher Kachel gehoeren - einmal je Zeichnung, danach nur gelesen.
@@ -3914,7 +3914,7 @@
 
   $('track-code-apply').onclick = () => {
     const parsed = codeToTrack($('track-code-in').value);
-    if (!parsed) { alert('Code nicht lesbar. Erwartet z. B. SG3R2G2R2@90 (S Start, G Gerade, R rechts, L links, H Haarnadel, B Box)'); return; }
+    if (!parsed) { alert(hdT('Code nicht lesbar. Erwartet z. B. SG3R2G2R2@90 (S Start, G Gerade, R rechts, L links, H Haarnadel, B Box)')); return; }
     currentTrackTiles = parsed.tiles;
     trackRotationDeg = parsed.rotation;
     const rv = $('track-rotation-val');
@@ -5054,7 +5054,7 @@
   // Reset is destructive and reachable by a single button press on a pad, so it asks first —
   // but only when there is actually something to lose.
   function trackReset() {
-    if (currentTrackTiles.length > 1 && !confirm('Strecke wirklich zurücksetzen?')) return;
+    if (currentTrackTiles.length > 1 && !confirm(hdT('Strecke wirklich zurücksetzen?'))) return;
     $('track-clear').click();
   }
 
@@ -6180,7 +6180,7 @@
   // track tab" - deshalb derselbe Ablauf (Store, Zeitstempel, Liste aktualisieren, log).
   function trackSpeichern(name) {
     if (!name) return;
-    if (currentTrackTiles.length === 0) { alert('Keine Streckenteile vorhanden.'); return; }
+    if (currentTrackTiles.length === 0) { alert(hdT('Keine Streckenteile vorhanden.')); return; }
     const store = loadTrackStore();
     const now = new Date().toISOString();
     store[name] = { id: name, name, tiles: currentTrackTiles, rotation: trackRotationDeg, createdAt: store[name]?.createdAt || now, updatedAt: now };
@@ -6193,7 +6193,7 @@
   }
   $('track-save').onclick = () => {
     const name = $('track-name').value.trim();
-    if (!name) { alert('Bitte einen Namen für die Strecke eingeben.'); return; }
+    if (!name) { alert(hdT('Bitte einen Namen für die Strecke eingeben.')); return; }
     trackSpeichern(name);
   };
   // Speichern im Editor (oben links): fragt nach einem Namen, schlaegt aber einen vor, wenn
@@ -6202,7 +6202,7 @@
   // like a real track and that I can just use to save the track. The button should be at the
   // top on the left side (so that I don't accidentally click on close instead of save)."
   $('track-save-toolbar').onclick = () => {
-    if (currentTrackTiles.length === 0) { alert('Keine Streckenteile vorhanden.'); return; }
+    if (currentTrackTiles.length === 0) { alert(hdT('Keine Streckenteile vorhanden.')); return; }
     // Eine geladene Strecke wird unter ihrem Namen vorgeschlagen (Namensfeld aus Meine Strecken).
     const geladen = ($('track-name') && $('track-name').value.trim()) || '';
     const eingabe = prompt(t('Name der Strecke'), geladen || trackNameVorschlag());
@@ -6236,10 +6236,10 @@
   // unbekannte Werte verworfen), dieser hier zaehlt nur. Fuer die Frage "welchen Code hat
   // dieses Teil" ist gerade das Verwerfen das Problem - ein Wert, den wir nicht kennen, ist
   // genau der, den man sucht.
-  const CODE_NAMES = { 0x00: 'kein Muster', 0x01: 'Start/Ziel', 0x02: 'Gerade',
+  const CODE_NAMES = { 0x00: hdT('kein Muster'), 0x01: 'Start/Ziel', 0x02: 'Gerade',
                        0x03: 'Kurve links', 0x04: 'Kurve rechts',
                        0x05: 'Haarnadel links', 0x06: 'Haarnadel rechts',
-                       0xff: 'keine Lesung' };
+                       0xff: hdT('keine Lesung') };
   let cmOn = false, cmCounts = {}, cmTotal = 0, cmPaint = 0, cmLastCar = null;
 
   // Drei weitere Signale, weil Byte 12 allein die Frage nicht beantwortet, ob der Sensor
@@ -6326,7 +6326,7 @@
       .map(([k, v]) => [parseInt(k, 10), v])
       .sort((a, b) => b[1] - a[1]);
     if (!rows.length) {
-      $('cm-rows').innerHTML = '<tr><td colspan="4" class="muted">noch nichts gez\u00e4hlt</td></tr>';
+      $('cm-rows').innerHTML = hdT('<tr><td colspan="4" class="muted">noch nichts gez\u00e4hlt</td></tr>');
       return;
     }
     const max = rows[0][1];
@@ -6538,7 +6538,7 @@
 
   function garageScanStart() {
     const car = playerCar || garage.find((c) => c.role === 'player') || garage[0];
-    if (!car) { alert('Kein Auto verbunden. Erst in der Garage verbinden.'); return; }
+    if (!car) { alert(hdT('Kein Auto verbunden. Erst in der Garage verbinden.')); return; }
     garageScan.aktiv = true;
     garageScan.car = car;
     garageScan.seq = [];
@@ -6551,7 +6551,7 @@
     const gehen = $('gar-scan-start'), stopp = $('gar-scan-stop');
     if (gehen) gehen.hidden = true;
     if (stopp) stopp.hidden = false;
-    garageScanStatus('Wartet auf die erste Überfahrt von Start/Ziel …');
+    garageScanStatus(hdT('Wartet auf die erste Überfahrt von Start/Ziel …'));
     // v1.0.37: ohne Spieler 1 faehrt das erste verbundene Auto mit eigenem Takt (90-ghosts.js).
     if (typeof scanFahrStart === 'function') scanFahrStart(car);
     log('Garagenscan gestartet: ' + garageLabel(car)
@@ -6560,7 +6560,7 @@
   }
 
   function garageScanStop() {
-    garageScanAbbrechen('Scan abgebrochen.');
+    garageScanAbbrechen(hdT('Scan abgebrochen.'));
     log('Garagenscan von Hand abgebrochen.', 'info');
   }
 
@@ -6602,11 +6602,11 @@
       if (schluss.closed && garageScan.seq.length >= 3) {
         currentTrackTiles = garageScan.seq;
         refreshTrackPreview();
-        const wie = 'Lücke ' + schluss.lueckeCm.toFixed(1) + ' cm, Winkel '
+        const wie = hdT('Lücke ') + schluss.lueckeCm.toFixed(1) + hdT(' cm, Winkel ')
           + schluss.winkel.toFixed(1) + '°';
         const gescannt = garageScan.car;
-        garageScanAbbrechen('Fertig: ' + garageScan.seq.length + ' Teile, Rundkurs '
-          + 'geschlossen (' + wie + ').');
+        garageScanAbbrechen(hdT('Fertig: ') + garageScan.seq.length + hdT(' Teile, Rundkurs ')
+          + hdT('geschlossen (') + wie + ').');
         if (typeof scanAnhalten === 'function') scanAnhalten(gescannt);
         showHudToast(t('STRECKE GESCANNT: {n} TEILE').replace('{n}', garageScan.seq.length));
         log('Garagenscan fertig: ' + garageScan.seq.length + ' Teile, geschlossen (' + wie
@@ -6616,15 +6616,15 @@
       // NICHT GESCHLOSSEN: noch eine Runde messen, wie bestellt - statt aufzugeben.
       garageScan.versuch++;
       if (garageScan.versuch > GARAGE_SCAN_VERSUCHE_MAX) {
-        garageScanAbbrechen('Abgebrochen: nach ' + GARAGE_SCAN_VERSUCHE_MAX + ' Versuchen '
-          + 'schliesst die gemessene Runde nicht (zuletzt ' + garageScan.seq.length
-          + ' Teile, Lücke ' + schluss.lueckeCm.toFixed(1) + ' cm). Bitte von Hand prüfen.');
+        garageScanAbbrechen(hdT('Abgebrochen: nach ') + GARAGE_SCAN_VERSUCHE_MAX + hdT(' Versuchen ')
+          + hdT('schliesst die gemessene Runde nicht (zuletzt ') + garageScan.seq.length
+          + hdT(' Teile, Lücke ') + schluss.lueckeCm.toFixed(1) + hdT(' cm). Bitte von Hand prüfen.'));
         log('Garagenscan aufgegeben nach ' + GARAGE_SCAN_VERSUCHE_MAX + ' Versuchen.', 'err');
         return;
       }
-      garageScanStatus('Runde ' + (garageScan.versuch - 1) + ' schliesst nicht (Lücke '
-        + schluss.lueckeCm.toFixed(1) + ' cm, Winkel ' + schluss.winkel.toFixed(1)
-        + '°) – miss noch eine Runde …');
+      garageScanStatus(hdT('Runde ') + (garageScan.versuch - 1) + hdT(' schliesst nicht (Lücke ')
+        + schluss.lueckeCm.toFixed(1) + hdT(' cm, Winkel ') + schluss.winkel.toFixed(1)
+        + hdT('°) – miss noch eine Runde …'));
       log('Garagenscan: Runde schliesst nicht (Lücke ' + schluss.lueckeCm.toFixed(1)
           + ' cm, Winkel ' + schluss.winkel.toFixed(1) + '°), Versuch ' + garageScan.versuch
           + ' von ' + GARAGE_SCAN_VERSUCHE_MAX + ' …', 'info');
@@ -6633,7 +6633,7 @@
     }
     garageScan.seq.push({ type: codeZuTyp(best) });
     if (garageScan.seq.length > 60) {
-      garageScanAbbrechen('Abgebrochen: 60 Teile ohne zweite Start/Ziel-Überfahrt.');
+      garageScanAbbrechen(hdT('Abgebrochen: 60 Teile ohne zweite Start/Ziel-Überfahrt.'));
       log('Garagenscan verworfen: 60 Teile ohne zweite Start/Ziel-Ueberfahrt.', 'err');
     }
   }

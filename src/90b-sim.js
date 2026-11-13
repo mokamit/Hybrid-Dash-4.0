@@ -117,7 +117,7 @@
   // Start
   // =====================================================================================
   function simStart() {
-    if (simAn()) { simStop('neu gestartet'); }
+    if (simAn()) { simStop(hdT('neu gestartet')); }
     // ---- OHNE EIGENE STRECKE: die gemeldete ------------------------------------------
     //
     // Bestellt: "Standard Streckenlayout fuer Simulation (wenn nichts eingetragen): Nimm
@@ -135,7 +135,7 @@
     if (!tiles || tiles.length < 3) {
       const v = codeToTrack(TRACK_VORGABE_CODE);
       if (!v || !v.tiles || v.tiles.length < 3) {
-        simLage('Es ist keine Strecke eingetragen. Baue oder scanne erst eine.');
+        simLage(hdT('Es ist keine Strecke eingetragen. Baue oder scanne erst eine.'));
         showHudToast('KEINE STRECKE');
         return;
       }
@@ -148,7 +148,7 @@
     // die Uhr; beides mitten in einem laufenden Rennen zu tun waere kein Fehler, den man
     // erklaeren koennte.
     if (raceState === 'racing' || raceState === 'finishing' || raceState === 'countdown') {
-      simLage('Erst das laufende Rennen beenden.');
+      simLage(hdT('Erst das laufende Rennen beenden.'));
       return;
     }
     const anzahl = Math.max(2, Math.min(6, parseInt(($('sim-ghosts') || {}).value, 10) || 4));
@@ -207,7 +207,7 @@
 
     simState.timer = setInterval(simTakt, SIM_TAKT_MS);
     simLage(anzahl + ' NPCs, ' + runden + (runden === 1 ? ' Runde' : ' Runden')
-            + (doppelt ? ', doppelt' : '') + ' - laeuft');
+            + (doppelt ? hdT(', doppelt') : '') + ' - laeuft');
     log('Simulation gestartet: ' + anzahl + ' NPCs, ' + runden + ' Runden auf '
         + tiles.length + ' Kacheln.', 'info');
     simZeichnen();
@@ -226,7 +226,7 @@
     simSchritt();
     simZeichnen();
     if (st.fertig >= st.autos.length) { simStop('Rennen beendet'); return; }
-    if (st.uhr - st.beginn > SIM_ZEIT_MAX_MS) { simStop('Zeitgrenze erreicht'); }
+    if (st.uhr - st.beginn > SIM_ZEIT_MAX_MS) { simStop(hdT('Zeitgrenze erreicht')); }
   }
 
   // ---- Ein Rechenschritt ------------------------------------------------------------

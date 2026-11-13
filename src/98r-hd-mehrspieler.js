@@ -52,7 +52,7 @@
   const HD_MP_HOST_STORE = 'hybriddash.mp.host.v1';
   const HD_MP_CLIENT_STORE = 'hybriddash.mp.client.v1';
   const HD_MP_ICE = [{ urls: 'stun:stun.l.google.com:19302' }];
-  const HD_MP_SLOTS = [2, 3];
+  const HD_MP_SLOTS = Array.from({ length: SPIELER_MAX - 1 }, (_, i) => i + 2);   // Hybrid Dash 4.0: remote players can take any of the 8 slots (was [2, 3])
   const HD_MP_KNOEPFE = 18;
 
   function mt(s) { return typeof t === 'function' ? t(s) : s; }

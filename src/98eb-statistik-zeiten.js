@@ -202,7 +202,7 @@
           + statCleanZeitenBericht(plan) + '\n\n'
           + statCleanT('Der vorherige Stand wird lokal gesichert.'))) return;
         const b = plan.bericht;
-        await statCleanAnwenden(raw, plan, 'Zeiten < ' + plan.grenze / 1000 + 's: ' + plan.key,
+        await statCleanAnwenden(raw, plan, hdT('Zeiten < ') + plan.grenze / 1000 + 's: ' + plan.key,
           statCleanT('Zeiten gelöscht: {r} Runde(n), {b} Bestzeit-Rekord(e), {t} Telemetrie-Einträge. Lokale Sicherung erstellt.',
             { r: b.runden, b: b.rekorde, t: b.spuren }));
       } catch (e) { statCleanFehler(e); }

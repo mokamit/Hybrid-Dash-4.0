@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Hybrid-Dash 3.0</title>
+<title>Hybrid-Dash 4.0</title>
 <link rel="icon" type="image/png" href="icons/hd-logo-64.png">
 <!-- ALS APP INSTALLIERBAR. Rein zusaetzlich: im Browser laeuft alles unveraendert weiter.
      Der Nutzen ist Vollbild ohne Adresszeile, ein Symbol im Startmenue und - mit dem
@@ -6276,7 +6276,18 @@
     html body.k-kacheln #tab-fahren .k-fahren.hdhm { display: grid; gap: 18px; min-height: 0;
       grid-template-columns: minmax(0, 1.33fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
       grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
-      grid-template-areas: "start renn renn fahrer" "start strecke meister fahrer"; }
+      grid-template-areas: "start strecke karriere fahrer" "start strecke meister fahrer"; }
+    /* Hybrid-Dash 4.0: the Career card */
+    html body.k-kacheln #fa-hd4-karriere { grid-area: karriere; }
+    /* Hybrid-Dash 4.0: START RACE and RACE OPTIONS are ONE card. Both elements stay (ids, handlers, the
+       left / right switching of the race type, the controller's way from card to card): the Race Options
+       card loses its photo and frame and lies as a bar inside the Start card, right above the red Start bar. */
+    html body.k-kacheln #tab-fahren .k-fahren.hdhm #fa-renn { grid-area: start; align-self: end; z-index: 2; min-height: 0;
+      margin: 0 1px var(--hd4-startbar, 104px) 1px; background: transparent; border: 0; }
+    html body.k-kacheln #tab-fahren .k-fahren.hdhm #fa-renn > .k-kb { display: none; }
+    html body.k-kacheln #tab-fahren .k-fahren.hdhm #fa-renn .hdhm-bar { background: rgba(20,16,20,.9); border-top: 1px solid rgba(255,255,255,.14); }
+    html body.k-kacheln #tab-fahren .k-fahren.hdhm #fa-renn.menu-nav-sel, html body.k-kacheln #tab-fahren .k-fahren.hdhm #fa-renn:hover { outline-offset: -3px; }
+    html body.k-kacheln #tab-fahren .k-fahren.hdhm #fa-start .k-start-innen { min-height: var(--hd4-startbar, 104px); box-sizing: border-box; }
     html body.k-kacheln #tab-fahren .k-fahren.hdhm > .k-fahren-unten { display: contents; }
     html body.k-kacheln #fa-start { grid-area: start; } html body.k-kacheln #fa-renn { grid-area: renn; }
     html body.k-kacheln #fa-strecke { grid-area: strecke; } html body.k-kacheln #fa-profil { grid-area: meister; }
@@ -6294,6 +6305,7 @@
   html body #tab-fahren .k-fahren.hdhm .k-kachel > .k-kb::after { background: linear-gradient(180deg, rgba(10,8,12,0) 55%, rgba(10,8,12,.45) 100%) !important; }
   html body #tab-fahren .k-fahren.hdhm .k-kachel.menu-nav-sel, html body #tab-fahren .k-fahren.hdhm .k-kachel:hover { outline: 3px solid var(--c-red); outline-offset: -3px; }
   html body #tab-fahren #fa-profil.k-meister { background: url(img/meisterschaft-bg.jpg) 36% center / cover no-repeat; }
+  html body #tab-fahren #fa-hd4-karriere { background: url(img/rennoptionen-endurance.jpg) center / cover no-repeat; cursor: pointer; }
   /* the bottom bar */
   .hdhm-bar { position: relative; z-index: 1; display: flex; align-items: center; gap: 14px; min-height: 64px; padding: 8px 18px; box-sizing: border-box;
     background: rgba(28,24,28,.88); border-top: 1px solid rgba(255,255,255,.08); }
@@ -6587,7 +6599,7 @@
 <header id="k-kopf">
   <!-- BESTELLT: "Per Klick auf das Omega oben links ... zurueck zum Startbildschirm". -->
   <!-- Hybrid-Dash 3.0: the app logo (car + speedometer) instead of the "HD" mark; it leads to the main menu. -->
-  <button class="hdr-logo goto-tab" data-tab="home" title="Hybrid-Dash 3.0" aria-label="Hybrid-Dash 3.0">
+  <button class="hdr-logo goto-tab" data-tab="home" title="Hybrid-Dash 4.0" aria-label="Hybrid-Dash 4.0">
     <img src="icons/hd-mark.png" alt="" class="hd-logo-bild" width="58" height="24">
   </button>
   <!-- BESTELLT: "Tabs nach ganz oben und 'Hauptmenü' Zurückpfeil wegtun ... Oben links nur
@@ -6616,6 +6628,9 @@
   <button class="tab-btn" data-tab="mp" data-parent="hdmp" hidden style="display:none">WLAN Mehrspieler</button>
   <!-- v3.0: Multiplayer as its own top tab (98r-hd-mehrspieler.js). -->
   <button class="tab-btn" data-tab="hdmp">Mehrspieler</button>
+  <!-- Hybrid-Dash 4.0: Career belongs to Race Control, the Showroom to the Garage. -->
+  <button class="tab-btn" data-tab="hd4-karriere" data-parent="fahren" hidden style="display:none" data-i18n-skip>Career</button>
+  <button class="tab-btn" data-tab="hd4-showroom" data-parent="garage" hidden style="display:none" data-i18n-skip>Showroom</button>
   <button class="tab-btn" data-tab="info" data-parent="options" hidden style="display:none">Info</button>
   <button class="tab-btn" data-tab="misc">Entwicklertools</button>
   <!-- Nicht in der Leiste, aber weiter als Tab-Knopf vorhanden: showTab() sucht genau
@@ -6661,14 +6676,14 @@
          Jede Taste, jeder Klick ausserhalb von Sprache und Links fuehrt ins Hauptmenue
          (51-konsole.js). #lang-toggle, #app-version und #home-install behalten ihre ids. -->
     <div class="k-titel">
-    <div class="home-titel" aria-label="HYBRID-DASH 3.0" data-i18n-skip>
-      <span class="home-omega hd-omega" data-t="3.0" aria-hidden="true">3.0</span>
+    <div class="home-titel" aria-label="HYBRID-DASH 4.0" data-i18n-skip>
+      <span class="home-omega hd-omega" data-t="4.0" aria-hidden="true">4.0</span>
       <!-- BESTELLT: "OMEGA blaue glitches und SIM rote (links blau, rechts rot, wie die
            Strecke). Sonst sieht es aus wie die Niederländische Flagge" - vorher lag oben ein
            blauer und unten ein roter Streifen quer ueber beiden Woertern. -->
       <span class="home-titel-text k-glitch-blau" data-text="HYBRID">HYBRID</span><span
         class="hd3-strich" aria-hidden="true">-</span><span
-        class="home-titel-text k-glitch-rot" data-text="DASH">DASH</span><span class="hd3-plakette" aria-hidden="true">3.0</span>
+        class="home-titel-text k-glitch-rot" data-text="DASH">DASH</span><span class="hd3-plakette" aria-hidden="true">4.0</span>
     </div>
       <h2 class="k-slogan">Vollst&auml;ndige Gestaltungsfreiheit f&uuml;r deine Carrera Hybrid&nbsp;Bahn</h2>
       <button type="button" id="lang-toggle" aria-label="Sprache wechseln / switch language / cambiar idioma">
@@ -6697,7 +6712,7 @@
            geoeffnet ist, mit direktem Download der neuesten APK". Sichtbar nur im Browser und
            nicht auf iPhone/iPad (97b-app.js). Die Adresse zeigt auf die feste Datei OmegaSim.apk
            der neuesten Release; auf der luuke42-Kopie auf die APK im eigenen Repo. -->
-      <a class="k-apk" id="home-apk" href="https://github.com/mokamit/Hybrid-Dash-3.0/releases/latest/download/HybridDash.apk" hidden>
+      <a class="k-apk" id="home-apk" href="https://github.com/mokamit/Hybrid-Dash-4.0/releases/latest/download/HybridDash.apk" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
              stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
         <span>Installiere die Android App f&uuml;r Mehrspieler</span></a>
@@ -6721,9 +6736,9 @@
         <span class="home-lade-dreh" id="home-lade-dreh"></span><span class="home-lade-text" id="home-lade-text" data-i18n-skip></span>
       </div>
       <div class="k-titel-fuss">
-        <span class="foot-ver">v<span id="app-version">1.3.92</span></span>
-        <span data-i18n-skip>Hybrid-Dash 3.0 &middot; MIT &middot; based on <a href="https://github.com/Luuke42/omegasim" target="_blank" rel="noopener noreferrer">OmegaSim</a> by Luuke</span>
-        <a class="foot-code" href="https://github.com/mokamit/Hybrid-Dash-3.0"
+        <span class="foot-ver">v<span id="app-version">4.0.0</span></span>
+        <span data-i18n-skip>Hybrid-Dash 4.0 &middot; MIT &middot; based on <a href="https://github.com/Luuke42/omegasim" target="_blank" rel="noopener noreferrer">OmegaSim</a> by Luuke</span>
+        <a class="foot-code" href="https://github.com/mokamit/Hybrid-Dash-4.0"
            target="_blank" rel="noopener noreferrer">Code auf GitHub</a>
         <button id="home-install" hidden>Als App installieren</button>
       </div>
@@ -6788,6 +6803,11 @@
         <span class="k-kk">Meisterschaft</span>
         <span class="k-kopf"><span class="k-kt">Meisterschaft erstellen</span></span>
         <span class="k-ki"></span>
+      </div>
+      <!-- Hybrid-Dash 4.0: Career mode (98zg-hd4-karriere.js) has its own card. -->
+      <div class="k-kachel k-klein hd4-karriere-kachel" id="fa-hd4-karriere" role="button" tabindex="0" data-i18n-skip>
+        <span class="hdhm-bar"><span class="hdhm-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v4a5 5 0 0 1-10 0z"/><path d="M7 6H4a3 3 0 0 0 3 3M17 6h3a3 3 0 0 1-3 3M12 13v4M8 20h8"/></svg></span>
+          <span class="hdhm-text"><span class="k-kk">Career</span><span class="k-kopf"><span class="k-kt" id="fa-hd4-karriere-text">Start a career</span></span></span></span>
       </div>
         <div class="k-kachel k-start" id="fa-start" role="button" tabindex="0">
           <span class="k-start-innen"><b id="fa-start-titel">Rennen starten</b><small id="fa-start-unter"></small></span>
@@ -6982,7 +7002,7 @@
           <span class="act-pfeil rechts" aria-hidden="true" data-i18n-skip>&rsaquo;</span>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z"/><path d="M16 9a4.2 4.2 0 0 1 0 6" stroke="var(--bad)"/><path d="M18.6 6.4a7.8 7.8 0 0 1 0 11.2" stroke="var(--bad)"/></svg>
-          <span id="race-act-sound-txt" data-i18n-skip>Motor</span></button>
+          <span id="race-act-sound-txt" data-i18n-skip>Engine</span></button>
       </div>
 
       <div class="gt3-strip">
@@ -7048,7 +7068,7 @@
              title="Wetter umschalten: sonnig, Regen, wechselhaft">
           <canvas id="race-wx-radar" class="wx-radar" width="200" height="150"
                   aria-hidden="true"></canvas>
-          <div class="wx-ico"><svg class="gt3-ico" id="race-wx-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-label="Trocken"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.4M12 19.6V22M2 12h2.4M19.6 12H22M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M19.1 4.9l-1.7 1.7M6.6 17.4l-1.7 1.7"/></svg><svg class="gt3-ico" id="race-wx-rain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-label="Regen" style="display:none"><path d="M6.5 14a4 4 0 0 1 .4-8 5.5 5.5 0 0 1 10.5 1.4A3.6 3.6 0 0 1 17.5 14z"/><path d="M8 17.5l-1 2.5M12 17.5l-1 2.5M16 17.5l-1 2.5"/></svg><span class="wx-wechsel" id="race-wx-wechsel" aria-label="wechselhaft" style="display:none" data-i18n-skip>&#8646;</span></div></div>
+          <div class="wx-ico"><svg class="gt3-ico" id="race-wx-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-label="Trocken"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.4M12 19.6V22M2 12h2.4M19.6 12H22M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M19.1 4.9l-1.7 1.7M6.6 17.4l-1.7 1.7"/></svg><svg class="gt3-ico" id="race-wx-rain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-label="Regen" style="display:none"><path d="M6.5 14a4 4 0 0 1 .4-8 5.5 5.5 0 0 1 10.5 1.4A3.6 3.6 0 0 1 17.5 14z"/><path d="M8 17.5l-1 2.5M12 17.5l-1 2.5M16 17.5l-1 2.5"/></svg><span class="wx-wechsel" id="race-wx-wechsel" aria-label="Changeable" style="display:none" data-i18n-skip>&#8646;</span></div></div>
         <!-- Was auf dem Steuerkreuz liegt: hoch die Reifenwahl, runter die Tankmenge.
              Die Kachel und das Kreuz zeigen dieselben zwei Groessen.
 
@@ -7134,8 +7154,8 @@
       </div>
       <div class="gt3-marke">
         <svg viewBox="0 0 512 512" aria-hidden="true"><use href="#om" fill="#e6ecf7"/></svg>
-        <a href="https://mokamit.github.io/Hybrid-Dash-3.0/" target="_blank" rel="noopener noreferrer"
-           data-i18n-skip>mokamit.github.io/Hybrid-Dash-3.0</a>
+        <a href="https://mokamit.github.io/Hybrid-Dash-4.0/" target="_blank" rel="noopener noreferrer"
+           data-i18n-skip>mokamit.github.io/Hybrid-Dash-4.0</a>
         <span data-i18n-skip>HybridDash</span>
       </div>
       <!-- ZWEI ZUSAETZLICHE SCHIRME, im Markup und NICHT zur Malzeit erzeugt: der
@@ -7168,7 +7188,7 @@
         <div class="schirm-kopf pit-kopf">
           <span class="pit-zeichen" id="pit-zeichen" aria-hidden="true">P</span>
           <span class="pit-kopf-text"><b>Box</b>
-            <span id="pit-kopf-lage" data-i18n-skip>aus</span></span>
+            <span id="pit-kopf-lage" data-i18n-skip>off</span></span>
           <span style="margin-left:auto" id="pit-kopf-zeit" data-i18n-skip></span></div>
         <div class="pit-row" id="pit-row-go">
           <span class="pr-pfeil" aria-hidden="true">&#9656;</span>
@@ -7384,7 +7404,7 @@
                 <span class="act-pfeil rechts" aria-hidden="true" data-i18n-skip>&rsaquo;</span>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z"/><path d="M16 9a4.2 4.2 0 0 1 0 6" stroke="var(--bad)"/><path d="M18.6 6.4a7.8 7.8 0 0 1 0 11.2" stroke="var(--bad)"/></svg>
-                <span id="vgl1-act-sound-txt" data-i18n-skip>Motor</span></button>
+                <span id="vgl1-act-sound-txt" data-i18n-skip>Engine</span></button>
             </div>
           </div>
 
@@ -7759,7 +7779,7 @@
       <div class="row" style="gap:10px; flex-wrap:wrap">
         <button type="button" class="primary" id="app-pruefen">Nach Update suchen</button>
         <button type="button" id="app-eingebaut">Mitgelieferte Fassung verwenden</button>
-        <a class="mp-datei" id="app-apk-link" href="https://github.com/mokamit/Hybrid-Dash-3.0/releases/latest"
+        <a class="mp-datei" id="app-apk-link" href="https://github.com/mokamit/Hybrid-Dash-4.0/releases/latest"
            target="_blank" rel="noopener noreferrer">Neueste APK auf GitHub</a>
       </div>
       <div class="opt-row"><div class="opt-label">Beim Start nach Updates suchen
@@ -8578,11 +8598,6 @@
   </section>
 
   <section class="tabpage" id="tab-doc">
-    <div class="card" style="border-color:var(--warn)">
-      <p class="muted" style="margin:0" data-i18n-skip>
-        <b>This is available in German only, at the moment.</b>
-      </p>
-    </div>
     <button class="misc-back goto-tab" data-tab="misc">&larr; Entwicklertools</button>
 
     <div class="card">
@@ -10937,6 +10952,20 @@
        schob er ausserdem Rennmodus, Rundenlogik und Ergebnisse unter den Rand. -->
   <!-- v3.0 BESTELLT: "Create a separate tab for Multiplayer. A laptop is required to be the host ..." The two cards
        are filled by hdMpMalen() (98r-hd-mehrspieler.js). -->
+  <!-- Hybrid-Dash 4.0: Career (Race Control) and Showroom (Garage). The content is drawn by the 98z*-hd4 files. -->
+  <section class="tabpage" id="tab-hd4-karriere">
+    <div class="card hd4-karte-seite" data-i18n-skip>
+      <button class="misc-back goto-tab" data-tab="fahren">&larr; Race Control</button>
+      <div id="hd4-seite-karriere"></div>
+    </div>
+  </section>
+  <section class="tabpage" id="tab-hd4-showroom">
+    <div class="card hd4-karte-seite" data-i18n-skip>
+      <button class="misc-back goto-tab" data-tab="garage">&larr; Garage</button>
+      <div id="hd4-seite-showroom"></div>
+    </div>
+  </section>
+
   <section class="tabpage" id="tab-hdmp">
     <div class="card hdmp-seite">
       <h2>Mehrspieler</h2>
@@ -10950,6 +10979,11 @@
           <h3>Mitfahren (Handy oder Laptop)</h3>
           <div id="hdmp-join" data-i18n-skip></div>
         </div>
+      </div>
+      <!-- Hybrid-Dash 4.0: the second multiplayer mode - controllers on this laptop (98zi-hd4-lokal.js). -->
+      <div class="hdmp-karte hd4-lokal-karte" data-i18n-skip>
+        <h3>Local players (controllers on this laptop)</h3>
+        <div id="hd4-seite-lokal"></div>
       </div>
       <p class="muted hdmp-fuss">Die Steuerung läuft direkt von Gerät zu Gerät im WLAN; nur das Kennenlernen über den Code geht einmal über einen Treffpunkt im Netz, verschlüsselt. Bis zu zwei Mitspieler.</p>
       <p><button type="button" class="k-knopf goto-tab" data-tab="mp">Ältere Wege: Handy als Host (Android-App) oder PC mit Python</button></p>
@@ -11818,6 +11852,27 @@
                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 34l9-12 8 6 9-14 12 10"/><path d="M5 42h38" stroke="var(--bad)"/></svg>
           <b>Telemetrie <span class="wip-tag">WIP</span></b>
           <span>Deine Runden Teil f&uuml;r Teil: wo du Zeit gewinnst und verlierst, Tempo, Gas und Bremse.</span>
+        </button>
+        <!-- Hybrid-Dash 4.0 -->
+        <button class="misc-tile subpage-open" data-sub="opt-hd4-analyse" data-i18n-skip>
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8v32h36"/><path d="M12 30l8-10 7 6 11-16" stroke="var(--bad)"/><path d="M12 36h4M22 36h4M32 36h4"/></svg>
+          <b>Analysis</b>
+          <span>Speed, time-delta, throttle and brake traces by distance, sector consistency, incident heatmap.</span>
+        </button>
+        <button class="misc-tile subpage-open" data-sub="opt-hd4-strategie" data-i18n-skip>
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="24" r="17"/><circle cx="24" cy="24" r="6" stroke="var(--bad)"/><path d="M24 7v11M24 30v11M7 24h11M30 24h11"/></svg>
+          <b>Race strategy</b>
+          <span>Engine maps, fuel burn, tyre cliff and flat spots, pit rules, track evolution, failures.</span>
+        </button>
+        <button class="misc-tile subpage-open" data-sub="opt-hd4-ingenieur" data-i18n-skip>
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 28v-4a16 16 0 0 1 32 0v4"/><rect x="5" y="27" width="8" height="12" rx="3"/><rect x="35" y="27" width="8" height="12" rx="3"/><path d="M39 39c0 4-5 5-11 5" stroke="var(--bad)"/></svg>
+          <b>Race engineer</b>
+          <span>Radio callouts: gaps, tyre life, fuel laps, the pit window, weather.</span>
+        </button>
+        <button class="misc-tile subpage-open" data-sub="opt-hd4-ki" data-i18n-skip>
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="12" y="12" width="24" height="24" rx="4"/><rect x="19" y="19" width="10" height="10" stroke="var(--bad)"/><path d="M18 6v6M30 6v6M18 36v6M30 36v6M6 18h6M6 30h6M36 18h6M36 30h6"/></svg>
+          <b>AI drivers</b>
+          <span>NPC personalities, what they know about each track and about their rivals.</span>
         </button>
         <button class="misc-tile subpage-open" data-sub="opt-online">
           <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4"
@@ -13271,7 +13326,7 @@
       <div class="opt-row"><div class="opt-label">Beispielansage testen
           <small>Spielt die ausgewählte Stimme mit Tempo und Stimmhöhe. Vorproduzierte Clips nutzen auch Hall; die Browserstimme nutzt den gewählten Geräteton, aber keinen Hall oder Lautstärke-Boost.</small></div>
         <div class="row" style="gap:8px; align-items:center">
-          <button type="button" id="setting-announce-stand-test" data-i18n-skip>Testen</button>
+          <button type="button" id="setting-announce-stand-test" data-i18n-skip>Test</button>
           <span class="muted" id="setting-announce-stand-test-status" aria-live="polite"></span>
         </div></div>
       <div class="opt-head">Erweiterte Rennereignisse</div>
@@ -13870,7 +13925,7 @@
         <span class="muted" id="sim-vorgabe-hinweis">Ohne eingetragene Strecke wird auf
         SR3GLR2GR2G2 gefahren &ndash; geliehen, der Streckeneditor bleibt leer.</span>
         <button id="sim-stop" hidden>Abbrechen</button>
-        <span class="muted" id="sim-lage" data-i18n-skip>bereit</span>
+        <span class="muted" id="sim-lage" data-i18n-skip>ready</span>
       </div>
       <div class="sim-buehne">
         <div class="sim-karte" id="sim-karte"></div>
@@ -14330,6 +14385,23 @@
       </div>
     </div>
 
+    <!-- Hybrid-Dash 4.0: Analysis, Race strategy, Race engineer, AI drivers (drawn by the 98z*-hd4 files). -->
+    <div class="card subpage" id="sub-opt-hd4-analyse" data-i18n-skip>
+      <button class="misc-back subpage-back" data-sub="">&larr; Options</button>
+      <div id="hd4-seite-analyse"></div>
+    </div>
+    <div class="card subpage" id="sub-opt-hd4-strategie" data-i18n-skip>
+      <button class="misc-back subpage-back" data-sub="">&larr; Options</button>
+      <div id="hd4-seite-strategie"></div>
+    </div>
+    <div class="card subpage" id="sub-opt-hd4-ingenieur" data-i18n-skip>
+      <button class="misc-back subpage-back" data-sub="">&larr; Options</button>
+      <div id="hd4-seite-ingenieur"></div>
+    </div>
+    <div class="card subpage" id="sub-opt-hd4-ki" data-i18n-skip>
+      <button class="misc-back subpage-back" data-sub="">&larr; Options</button>
+      <div id="hd4-seite-ki"></div>
+    </div>
     <!-- TELEMETRIE (98g-telemetrie-seite.js): Inhalt entsteht im Code, mit t() uebersetzt. -->
     <div class="card subpage" id="sub-opt-telemetrie">
       <button class="misc-back subpage-back" data-sub="">&larr; Optionen</button>
@@ -15127,7 +15199,7 @@
               <th style="text-align:right; padding:3px 8px; color:var(--muted)">Dauer</th>
               <th style="text-align:right; padding:3px 8px; color:var(--muted)">Kachelz&auml;hler</th>
             </tr></thead>
-            <tbody data-i18n-skip id="tile-timeline"><tr><td colspan="4" class="muted">noch nichts</td></tr></tbody>
+            <tbody data-i18n-skip id="tile-timeline"><tr><td colspan="4" class="muted">nothing yet</td></tr></tbody>
           </table>
           <button id="tile-timeline-clear" style="margin-top:7px">Zeitleiste leeren</button>
         </div>
@@ -15237,7 +15309,7 @@
   <div class="meister-schirm" id="meister-schirm" data-i18n-skip hidden>
     <!-- v1.0.22 GEMELDET: "Aus dem Meisterschaftsmenue komme ich nicht raus, weil das Kreuz oben rechts
          hinter dem Tab ist." Das Kreuz steht jetzt links vorn, gross, und die Zurueck-Taste schliesst auch. -->
-    <div class="ms-kopf"><button type="button" class="ms-zu" id="ms-zu" aria-label="Schließen">&#10005;</button>
+    <div class="ms-kopf"><button type="button" class="ms-zu" id="ms-zu" aria-label="Close">&#10005;</button>
       <b id="ms-titel"></b><span class="ms-hint" id="ms-hint"></span></div>
     <div class="ms-grid" id="ms-grid"><div class="ms-liste" id="ms-liste"></div><div class="ms-detail" id="ms-detail"></div></div>
     <div class="ms-toast" id="ms-toast"></div>

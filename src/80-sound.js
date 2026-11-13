@@ -2013,7 +2013,7 @@
 
   $('cm-start').addEventListener('click', () => {
     cmOn = !cmOn;
-    $('cm-start').textContent = cmOn ? 'Z\u00e4hlen stoppen' : 'Z\u00e4hlen starten';
+    $('cm-start').textContent = cmOn ? hdT('Z\u00e4hlen stoppen') : 'Z\u00e4hlen starten';
     $('cm-start').classList.toggle('warn', cmOn);
     if (cmOn) cmReset();
     log('Rohcode-Monitor ' + (cmOn ? 'an' : 'aus') + '.', 'info');
@@ -2024,7 +2024,7 @@
     $('lat-hold-lbl').textContent = String(parseInt(e.target.value, 10) / 1000);
   });
   $('lat-start').addEventListener('click', () => {
-    if (lat.on) { latStop('von Hand beendet'); return; }
+    if (lat.on) { latStop(hdT('von Hand beendet')); return; }
     const car = playerCar || garage.find(c => c.rx);
     if (!car) { log('Querablage-Messung: kein Auto verbunden.', 'err'); return; }
     // Der Ghost-Fahrer wuerde gegen die Messung senden. Er wird angehalten, nicht
@@ -2036,7 +2036,7 @@
     lat.dir = parseInt($('lat-dir').value, 10);
     lat.steer = 0;
     lat.stepAt = Date.now();
-    $('lat-start').textContent = 'Messung stoppen';
+    $('lat-start').textContent = hdT('Messung stoppen');
     $('lat-start').classList.add('warn');
     latRender();
     log('Querablage-Messung laeuft mit ' + garageLabel(car) + '. Gas '

@@ -237,7 +237,7 @@
     // drei Klassen an Pro gerueckt sind, waere diese Abstimmung sonst mitgewandert - und mit
     // ihr die einzige, deren Zahlen aus Messungen kommen und nicht aus einer Anpassung.
     realgt3: {
-      label: 'Realismus GT3',
+      label: hdT('Realismus GT3'),
       kurz: 'Gegen echte Werte kalibriert',
       text: 'Von Hand schalten, 3,2 s auf 100 – die gemessene Reihe, gegen die die Physik gefittet ist –, voller Reifenverschleiß und volles Tankgewicht. Wenig Grip, schwache Bremse, langes Ausrollen, keine Reifenwärmer. Das ist die haerteste der sechs Abstimmungen und die einzige, deren Zahlen aus Messungen kommen und nicht aus einer Anpassung. Ein Fahrfehler kostet hier Zeit.',
       v: { 'setting-grip': 0.72, 'setting-brakepower': 0.85, 'setting-autoshift': false,
@@ -550,7 +550,7 @@
       const val = el.type === 'checkbox' ? el.defaultChecked : el.defaultValue;
       if (presetSet(el.id, val)) n++;
     }
-    presetSay('Werkseinstellung: ' + n + ' Regler zur\u00fcckgesetzt.');
+    presetSay(hdT('Werkseinstellung: ') + n + hdT(' Regler zur\u00fcckgesetzt.'));
     $('preset-json').value = JSON.stringify(presetRead());
   }
   if ($('gar-restore-defaults')) {
@@ -711,9 +711,9 @@
     const host = $('preset-legend');
     if (!host) return;
     if (!key) {
-      host.innerHTML = '<div class="preset-leg"><b>Eigene Abstimmung</b> <span class="muted">'
-        + 'kein fertiger Satz</span><small>Mindestens ein Regler weicht von allen sechs '
-        + 'Voreinstellungen ab. Ein Klick oben setzt wieder einen ganzen Satz.</small></div>';
+      host.innerHTML = hdT('<div class="preset-leg"><b>Eigene Abstimmung</b> <span class="muted">')
+        + hdT('kein fertiger Satz</span><small>Mindestens ein Regler weicht von allen sechs ')
+        + hdT('Voreinstellungen ab. Ein Klick oben setzt wieder einen ganzen Satz.</small></div>');
       return;
     }
     const p = PRESETS[key];
@@ -723,7 +723,7 @@
 
   $('preset-export').addEventListener('click', () => {
     $('preset-json').value = JSON.stringify(presetRead());
-    presetSay(presetControls().length + ' Regler hineingeschrieben, jetzt kopieren.');
+    presetSay(presetControls().length + hdT(' Regler hineingeschrieben, jetzt kopieren.'));
   });
 
   // ---- DIE PRUEFUNG EINGEHENDER REGLERWERTE, FUER ALLE AUFRUFER ------------------
@@ -759,10 +759,10 @@
 
   $('preset-import').addEventListener('click', () => {
     const raw = $('preset-json').value.trim();
-    if (!raw) { presetSay('Da steht nichts.'); return; }
+    if (!raw) { presetSay(hdT('Da steht nichts.')); return; }
     let cfg;
-    try { cfg = JSON.parse(raw); } catch (e) { presetSay('Das ist kein JSON.'); return; }
-    if (!cfg || typeof cfg !== 'object') { presetSay('Das ist keine Abstimmung.'); return; }
+    try { cfg = JSON.parse(raw); } catch (e) { presetSay(hdT('Das ist kein JSON.')); return; }
+    if (!cfg || typeof cfg !== 'object') { presetSay(hdT('Das ist keine Abstimmung.')); return; }
     const { bad, unknown } = presetPruefen(cfg);
     if (bad.length) { presetSay('Unbrauchbare Werte: ' + bad.join(', ')); return; }
     let n = 0;
@@ -790,7 +790,7 @@
   }
   function presetStoreWrite(o) {
     try { localStorage.setItem(PRESET_STORE, JSON.stringify(o)); }
-    catch (e) { presetSay('Konnte nicht ablegen: ' + e.message); }
+    catch (e) { presetSay(hdT('Konnte nicht ablegen: ') + e.message); }
   }
   // MEHRERE BEDIENSTELLEN, EIN SPEICHER: BESTELLT: "auch in garage erlauben,
   // standardeinstellungen zu machen" - die Ablage gibt es seit v0.7.x nur in den
@@ -803,7 +803,7 @@
 
   function presetStoreList() {
     const namen = Object.keys(presetStoreRead()).sort();
-    const optionsHtml = '<option value="">\u2013 abgelegt \u2013</option>'
+    const optionsHtml = hdT('<option value="">\u2013 abgelegt \u2013</option>')
       + namen.map(n => '<option>' + n.replace(/</g, '&lt;') + '</option>').join('');
     for (const selId of PRESET_STORE_SELECTS) {
       const sel = $(selId);
@@ -817,22 +817,22 @@
 
     $(saveId).addEventListener('click', () => {
       const name = $(nameId).value.trim();
-      if (!name) { presetSay('Erst einen Namen eingeben.'); return; }
+      if (!name) { presetSay(hdT('Erst einen Namen eingeben.')); return; }
       const o = presetStoreRead();
       const neu = !(name in o);
       o[name] = presetRead();
       presetStoreWrite(o);
       presetStoreList();
       $(listId).value = name;
-      presetSay('"' + name + '" ' + (neu ? 'abgelegt' : 'überschrieben')
-                + ', ' + Object.keys(o[name]).length + ' Regler.');
+      presetSay('"' + name + '" ' + (neu ? hdT('abgelegt') : hdT('überschrieben'))
+                + ', ' + Object.keys(o[name]).length + hdT(' Regler.'));
     });
 
     $(loadId).addEventListener('click', () => {
       const name = $(listId).value;
-      if (!name) { presetSay('Nichts ausgewählt.'); return; }
+      if (!name) { presetSay(hdT('Nichts ausgewählt.')); return; }
       const cfg = presetStoreRead()[name];
-      if (!cfg) { presetSay('"' + name + '" ist nicht mehr da.'); return; }
+      if (!cfg) { presetSay('"' + name + hdT('" ist nicht mehr da.')); return; }
       // Ueber den Textkasten und den vorhandenen Uebernehmen-Knopf: dessen Pruefung faengt
       // Werte ab, die es in dieser Fassung nicht mehr gibt oder die ausserhalb eines
       // Reglerbereichs liegen. Ein Speicherstand aus einer aelteren Fassung ist genau der
@@ -844,12 +844,12 @@
 
     $(delId).addEventListener('click', () => {
       const name = $(listId).value;
-      if (!name) { presetSay('Nichts ausgewählt.'); return; }
+      if (!name) { presetSay(hdT('Nichts ausgewählt.')); return; }
       const o = presetStoreRead();
       delete o[name];
       presetStoreWrite(o);
       presetStoreList();
-      presetSay('"' + name + '" gelöscht.');
+      presetSay('"' + name + hdT('" gelöscht.'));
     });
   }
 
