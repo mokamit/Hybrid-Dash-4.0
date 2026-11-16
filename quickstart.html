@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hybrid-Dash 4.0 Quick Start</title>
+<style>
+  :root { --bg: #fff; --fg: #1b1b1f; --dim: #5d5d66; --card: #f4f4f6; --line: #dcdce2; --red: #e10600; --yellow: #ffd400; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #131316; --fg: #f1f1f4; --dim: #a4a4ae; --card: #1d1d22; --line: #34343c; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 "Titillium Web", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 820px; margin: 0 auto; padding: 0 16px 56px; }
+  header { padding: 36px 0 18px; border-bottom: 4px solid var(--red); margin-bottom: 8px; }
+  header h1 { margin: 0; font-size: clamp(28px, 6vw, 44px); font-style: italic; font-weight: 800; text-transform: uppercase; letter-spacing: .02em; }
+  header h1 span { color: var(--red); }
+  header p { margin: 6px 0 0; color: var(--dim); }
+  .badge { display: inline-block; background: var(--yellow); color: #111; font-weight: 700; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; padding: 2px 8px; margin-left: 8px; vertical-align: middle; }
+  h2 { font-size: 22px; margin: 36px 0 10px; font-style: italic; text-transform: uppercase; letter-spacing: .02em; }
+  h2 .n { display: inline-grid; place-items: center; width: 30px; height: 30px; margin-right: 8px; background: var(--red); color: #fff; font-style: normal; font-size: 16px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--red); padding: 12px 16px; margin: 10px 0; }
+  .card.warn { border-left-color: var(--yellow); }
+  ul { padding-left: 20px; margin: 8px 0; }
+  li { margin: 4px 0; }
+  kbd { background: var(--card); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 6px; font: 600 13px ui-monospace, Consolas, monospace; white-space: nowrap; }
+  table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 15px; }
+  th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--dim); }
+  a { color: var(--red); }
+  .go { display: inline-block; background: var(--red); color: #fff; text-decoration: none; font-weight: 700; padding: 10px 20px; text-transform: uppercase; letter-spacing: .05em; margin: 6px 8px 6px 0; }
+  .go.alt { background: transparent; color: var(--fg); border: 2px solid var(--line); }
+  .dim { color: var(--dim); }
+  footer { margin-top: 44px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--dim); font-size: 14px; }
+  @media print { .go { display: none; } body { font-size: 12pt; } .card { break-inside: avoid; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Hybrid-Dash <span>4.0</span> Quick Start <span class="badge">Beta</span></h1>
+  <p>From zero to your first race in about five minutes.</p>
+  <p>
+    <a class="go" href="./">Open the app</a>
+    <a class="go alt" href="https://github.com/mokamit/Hybrid-Dash-4.0">Source on GitHub</a>
+  </p>
+</header>
+
+<h2>Before you start</h2>
+<div class="card">
+  <ul>
+    <li><b>Browser:</b> Chrome or Edge on Windows, Android or ChromeOS. Safari and Firefox cannot use Bluetooth, so they can only run the app without cars.</li>
+    <li><b>Cars:</b> Carrera Hybrid cars with charged batteries and Bluetooth on. One car is enough to start.</li>
+    <li><b>Controller:</b> optional. PlayStation and Xbox pads work; so does the keyboard. Connect the pad by Bluetooth or USB and press any button once so the browser notices it.</li>
+    <li><b>No car or track?</b> You can still look around, and in the Garage <i>Drive virtually</i> (beta) lets you drive without a car.</li>
+  </ul>
+</div>
+<div class="card warn">
+  This is a <b>beta</b>. Things can break. Settings are saved in your browser, so use the same browser each time.
+</div>
+
+<h2><span class="n">1</span>Connect your car</h2>
+<ul>
+  <li>On the main menu, press <b>Connect</b> on the <i>Cars &amp; Drivers</i> card.</li>
+  <li>Pick your car in the browser's Bluetooth window. Repeat for every car (the browser asks once per car).</li>
+  <li><b>Garage</b> lists your cars. Give each one a <b>role</b> with the arrows: <i>Player 1 to 8</i>, <i>NPC</i> (computer driver) or <i>Safety car</i>. Name, colour and number are remembered.</li>
+  <li><b>Start NPCs</b> in the Garage adds computer drivers. <b>Reconnect</b> brings back the cars you used last time with one click.</li>
+</ul>
+
+<h2><span class="n">2</span>Choose a track</h2>
+<ul>
+  <li><b>Scan:</b> the car drives your real track and the app maps it piece by piece.</li>
+  <li><b>Editor:</b> build or adjust the track on screen. <b>Load</b> opens one you saved.</li>
+  <li>NPCs, the racing line, sectors and most 4.0 features need a track.</li>
+</ul>
+
+<h2><span class="n">3</span>Set up and start the race</h2>
+<ul>
+  <li>On the <i>Start Race</i> card, the arrows on the <b>Race Options</b> bar switch the race type. Click the bar for duration, weather and mandatory pit stops.</li>
+  <li>Press the red <b>Start Race</b> bar (<kbd>Enter</kbd>, or <kbd>A</kbd> / <kbd>Cross</kbd> on a pad).</li>
+  <li>You see the grid, then the start lights, then it is on. <kbd>Esc</kbd> or <kbd>B</kbd> goes back in the menus.</li>
+</ul>
+
+<h2><span class="n">4</span>Driving</h2>
+<table>
+  <tr><th>Action</th><th>Keyboard</th><th>Controller</th></tr>
+  <tr><td>Throttle / brake</td><td><kbd>↑</kbd> <kbd>↓</kbd> or <kbd>W</kbd> <kbd>S</kbd></td><td><kbd>R2</kbd> / <kbd>L2</kbd></td></tr>
+  <tr><td>Steer</td><td><kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd></td><td>Left stick</td></tr>
+  <tr><td>Shift up / down</td><td><kbd>I</kbd> / <kbd>K</kbd></td><td>Circle / Square</td></tr>
+  <tr><td>Emergency stop</td><td><kbd>Space</kbd></td><td></td></tr>
+  <tr><td>Headlight flash</td><td><kbd>L</kbd></td><td><kbd>R3</kbd></td></tr>
+  <tr><td>Engine map (Rich, Standard, Lean)</td><td><kbd>E</kbd></td><td><kbd>L3</kbd></td></tr>
+  <tr><td>Pre-select tyres / fuel for the next stop</td><td></td><td><kbd>L1</kbd> / <kbd>R1</kbd></td></tr>
+  <tr><td>Automatic pit stop</td><td></td><td>Hold <kbd>L1</kbd> for 1 second</td></tr>
+  <tr><td>Yellow flag</td><td>Hold <kbd>X</kbd> for 1 second</td><td>Hold Cross for 1 second</td></tr>
+</table>
+<p class="dim">All buttons and their mapping are under <b>Options → Controller</b>. On the main menu, the <b>Controls</b> link shows the driving buttons live.</p>
+
+<h2>What is new in 4.0</h2>
+<table>
+  <tr><th>Feature</th><th>Where to find it</th></tr>
+  <tr><td><b>Career</b>: a season of GT World Challenge rounds (qualifying, races, endurance) on your own tracks, with points, licences, prize money and trophies</td><td>Main menu → <i>Career</i> card</td></tr>
+  <tr><td><b>Race strategy</b>: engine maps, throttle-based fuel burn, tyre cliff and flat spots, pit lane speed limit and work times, track evolution, optional mechanical failures</td><td>Options → <i>Race strategy</i></td></tr>
+  <tr><td><b>Race engineer</b>: radio calls for gaps, tyre life, fuel laps, pit window and weather</td><td>Options → <i>Race engineer</i></td></tr>
+  <tr><td><b>AI drivers</b>: NPCs with personalities that learn the track and their rivals</td><td>Options → <i>AI drivers</i></td></tr>
+  <tr><td><b>Analysis</b>: speed, delta and pedal traces by distance, sector consistency matrix, incident heatmap</td><td>Track card → <i>Analysis</i></td></tr>
+  <tr><td><b>Showroom</b>: collector cards with real photos and each car's record</td><td>Garage → <i>Showroom</i></td></tr>
+  <tr><td><b>Local multiplayer</b>: up to 8 players on one laptop, one controller each</td><td>Multiplayer → <i>Local players</i></td></tr>
+</table>
+
+<h2>Local multiplayer in 30 seconds</h2>
+<ul>
+  <li>Pair each controller with the laptop and press any button on it.</li>
+  <li>Open <b>Multiplayer → Local players</b> and press a button on each controller to join.</li>
+  <li>In the Garage give each connected car the matching <i>Player</i> role, then start the race.</li>
+  <li>Wi-Fi and Bluetooth multiplayer between several devices is on the same page, above the local players.</li>
+</ul>
+
+<h2>Two laptops, more cars</h2>
+<p>One laptop holds roughly 7 to 9 Bluetooth cars. For bigger fields open <b>helper.html</b> on a second laptop on the same Wi-Fi, create a pairing code on the first (Garage → <i>Two laptops</i>) and type it on the second.</p>
+
+<h2>If something does not work</h2>
+<ul>
+  <li><b>Car does not show up:</b> check the car is on and not connected to another phone or laptop, then try Connect again.</li>
+  <li><b>Pad not detected:</b> press a button on it once. Browsers only show a controller after its first input.</li>
+  <li><b>Old version showing:</b> reload the page. If it still looks old, clear the site data for this page.</li>
+  <li><b>Everything feels wrong:</b> Options has presets (Arcade, Pro, GT3 and more) for the driving feel.</li>
+</ul>
+
+<h2>Feedback</h2>
+<div class="card">
+  <p style="margin:0">Please report bugs and ideas on <a href="https://github.com/mokamit/Hybrid-Dash-4.0/issues">GitHub</a> or in the Carrera Hybrid group where you found this. For bugs it helps to say what you did, what happened, and your browser and device.</p>
+</div>
+
+<footer>
+  Hybrid-Dash 4.0 is a beta, free and open source (MIT). It builds on <b>OmegaSim by Luuke42</b> and the HybridDash work of the Carrera Hybrid community, with thanks to Playdater1974, seVen, KaiGS and gnen54. Carrera Hybrid is a product of Carrera and Sturmkind; this project is independent of both.
+</footer>
+
+</div>
+</body>
+</html>

@@ -131,6 +131,43 @@
       text: 'Unter der Streckenkarte stellst du Modus und Preset ein. Erfuellst du das Ziel, bekommst du eine Medaille.' },
   ];
 
+  // HYBRID-DASH 4.0 START GUIDE. Replaces the old "Tutorial" button in the footer: a short tour over the
+  // real screens (spotlight + card, controller / keyboard / touch like the other tours). English only, like
+  // the rest of the 4.0 markup. The last card and every card carry a link to quickstart.html (the same
+  // guide as a document). The older driving tutorial with the voice is still in Options -> Tutorials.
+  const K_START = [
+    { tab: 'fahren', ziel: null, bild: 'fahren', titel: 'Welcome to Hybrid-Dash 4.0',
+      text: 'This beta builds on OmegaSim and HybridDash. A two-minute tour of the main menu follows. Next / Back with the buttons, the D-pad or the arrow keys; Esc or B leaves.' },
+    { tab: 'fahren', ziel: ['#fa-auto'], bild: 'auto', titel: '1 · Connect your car',
+      text: 'Press Connect and pick your Carrera Hybrid car in the Bluetooth window (Chrome or Edge). Repeat for each car. No car at hand? In the Garage, Drive virtually lets you try the app without one.' },
+    { tab: 'fahren', ziel: ['#fa-garage'], bild: 'garage', titel: 'Garage: roles and drivers',
+      text: 'Give every car a role with the arrows: Player 1 to 8, NPC or Safety car. Start NPCs adds computer drivers. Each car keeps its name, colour and number.' },
+    { tab: 'fahren', ziel: ['#fa-strecke'], bild: 'strecke-bahn', titel: '2 · Choose a track',
+      text: 'Scan lets your car drive the track and map it, Editor builds one, Load opens a saved one. NPCs and the racing line need a track. Analysis shows your laps once you have driven some.' },
+    { tab: 'fahren', ziel: ['#fa-renn'], bild: 'rennoptionen', titel: '3 · Race options',
+      text: 'The arrows switch the race type. Click the bar for duration, weather and mandatory pit stops.' },
+    { tab: 'fahren', ziel: ['#fa-start'], bild: 'start', titel: '4 · Start the race',
+      text: 'Press the red Start Race bar (A / Cross / Enter). You get the grid, the lights, then it is on.' },
+    { tab: 'race', ziel: null, taste: 'R2 · L2 · L-STICK', titel: 'Driving',
+      text: 'Keyboard: arrows or WASD, I / K shift, Space stops, E switches the engine map. Controller: R2 throttle, L2 brake, left stick steers, circle / square shift, hold L1 for an automatic pit stop, L3 engine map.' },
+    { tab: 'fahren', ziel: ['#fa-hd4-karriere'], bild: 'meisterschaft', titel: 'Career',
+      text: 'A season of GT World Challenge rounds on your own tracks: qualifying, races, endurance. Earn points, licences, prize money and trophies.' },
+    { tab: 'options', sub: 'opt-hd4-strategie', ziel: null, bild: 'optionen', titel: 'Race strategy',
+      text: 'Engine maps, throttle-based fuel burn, tyre cliff and flat spots, pit lane speed limit and work times, track evolution and optional mechanical failures.' },
+    { tab: 'options', sub: 'opt-hd4-ingenieur', ziel: null, bild: 'optionen', titel: 'Race engineer',
+      text: 'A voice on the radio with gaps, tyre life, fuel laps, the pit window and weather calls. Each type can be switched off.' },
+    { tab: 'options', sub: 'opt-hd4-ki', ziel: null, bild: 'optionen', titel: 'AI drivers',
+      text: 'NPCs with lasting personalities. They learn the track piece by piece and remember where an overtake worked against each rival.' },
+    { tab: 'fahren', ziel: ['#fa-strecke .hd4-menue-knopf'], bild: 'strecke-bahn', titel: 'Analysis',
+      text: 'Speed, time-delta, throttle and brake traces by distance, a sector consistency matrix and an incident heatmap.' },
+    { tab: 'garage', ziel: ['#gar-hd4-showroom'], bild: 'garage', titel: 'Showroom',
+      text: 'Every car as a holographic collector card with its record. Open it from the Garage action bar.' },
+    { tab: 'hdmp', ziel: ['#hd4-seite-lokal'], bild: 'mehrspieler', titel: 'Local multiplayer',
+      text: 'Up to eight players on one laptop. Press a button on each controller to join, then give each a car. Wi-Fi and Bluetooth multiplayer sit above it on the same page.' },
+    { tab: 'fahren', ziel: null, bild: 'fahren', titel: 'You are set',
+      text: 'The Quick start guide (document) is one tap away on every card. This is a beta: please report bugs and ideas. The older driving tutorial with voice is under Options, Tutorials.' },
+  ];
+
   const K_PAD_NAMEN = { 0: '✕', 1: '○', 2: '□', 3: '△', 4: 'L1', 5: 'R1', 6: 'L2', 7: 'R2', 8: 'SHARE',
     9: 'OPTIONS', 10: 'L3', 11: 'R3', 12: '▲', 13: '▼', 14: '◀', 15: '▶', 16: 'PS' };
   const kTourPadVorher = [];
@@ -184,7 +221,7 @@
   }
   // Wo eine Fuehrung endet: das Tutorial auf Fahren, die Steuerung dort, wo sie hinfuehrt.
   const K_TOUR_ENDE = new Map([[K_STEUERUNG, 'bleiben'], [K_EDITOR, 'bleiben'], [K_RAUM, 'bleiben'],
-                               [K_SAFETY, 'fahren'], [K_MEISTER, 'fahren'], [K_TIMEATTACK, 'fahren'], [K_CHALLENGES, 'fahren']]);
+                               [K_START, 'fahren'], [K_SAFETY, 'fahren'], [K_MEISTER, 'fahren'], [K_TIMEATTACK, 'fahren'], [K_CHALLENGES, 'fahren']]);
 
   let kTourOffen = false;
   let kTourSchritt = 0;
@@ -256,6 +293,7 @@
     $('k-tour-bild').hidden = !!s.taste;
     if (!s.taste) $('k-tour-bild').src = 'img/' + s.bild + '.jpg';
     $('k-tour-zurueck').hidden = kTourSchritt === 0;
+    if ($('k-tour-doku')) $('k-tour-doku').hidden = kTourListe !== K_START;
     const letzter = kTourSchritt === kTourListe.length - 1;
     $('k-tour-weiter').textContent = letzter
       ? (K_TOUR_ENDE.get(kTourListe) === 'bleiben' ? t('Fertig') : t('Los geht\'s')) + ' ▶' : t('Weiter') + ' ▶';
@@ -305,12 +343,12 @@
 
   (() => {
     const kn = (id, fn) => { const el = $(id); if (el) el.addEventListener('click', fn); };
-    kn('k-tutorial-start', (e) => { e.stopPropagation(); tutorialStarten(); });
+    kn('k-tutorial-start', (e) => { e.stopPropagation(); konsoleTourStart(K_START); });   // 4.0: the footer button is the Start Guide
     kn('k-steuerung-start', (e) => { e.stopPropagation(); konsoleTourStart(K_STEUERUNG); });
     kn('k-starten-start', (e) => { e.stopPropagation(); konsoleTitelWeiter(); });
     // v1.0.45 BESTELLT: "in den Optionen eine extra Kachel mit Tutorials" - jede Kachel in
     // der Liste startet ihre Fuehrung auf dem passenden Schirm.
-    const K_TOUREN = { steuerung: K_STEUERUNG, editor: K_EDITOR, raum: K_RAUM,
+    const K_TOUREN = { start: K_START, steuerung: K_STEUERUNG, editor: K_EDITOR, raum: K_RAUM,
                        safety: K_SAFETY, meister: K_MEISTER, time: K_TIMEATTACK, challenges: K_CHALLENGES };
     document.querySelectorAll('.tut-knopf').forEach((el) => {
       el.addEventListener('click', (e) => {

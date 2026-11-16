@@ -1014,7 +1014,7 @@
     // Steuerung." Alle anderen Tasten tun auf dem Titel nichts mehr.
     // v1.3.5: Kreuz (A am Xbox-Pad) loest den GEWAEHLTEN Knopf aus - vorgewaehlt ist Starten.
     if (neu === 0) { kTitelSperre = true; homeFokusAusloesen(); return true; }
-    if (neu === 3) { kTitelSperre = true; tutorialStarten(); return true; }
+    if (neu === 3) { kTitelSperre = true; konsoleTourStart(K_START); return true; }
     if (neu === 1) { kTitelSperre = true; konsoleTourStart(K_STEUERUNG); return true; }
     return true;
   }
@@ -1069,7 +1069,7 @@
       // loesen ihn aus (v1.3.5), Q/E wie L1/R1 die Sprache. T und S bleiben als Abkuerzung.
       if (k === 'arrowleft' || k === 'arrowright') homeFokusSchritt(k === 'arrowleft' ? -1 : 1);
       else if (k === 'q' || k === 'e') wechsleSprache();
-      else if (k === 't') tutorialStarten();
+      else if (k === 't') konsoleTourStart(K_START);
       else if (k === 's') konsoleTourStart(K_STEUERUNG);
       else if (k === 'enter' || k === ' ' || k === 'x') homeFokusAusloesen();
       return;
