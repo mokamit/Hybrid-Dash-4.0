@@ -8,6 +8,8 @@ Hybrid-Dash 4.0 is Hybrid-Dash 3.0 with everything it had, plus the systems belo
 - **Multiplayer**: the Wi-Fi mode (host / join) and, below it, **Local players** (controllers on this laptop).
 - **Options**: tiles for **Analysis**, **Race strategy**, **Race engineer** and **AI drivers**.
 
+**New here?** Press **Start Guide** in the footer of the main menu for a short tour, or read the [Quick start guide](quickstart.html) ([online](https://mokamit.github.io/Hybrid-Dash-4.0/quickstart.html)).
+
 ## New in 4.0
 
 | Feature | Where | What it does |

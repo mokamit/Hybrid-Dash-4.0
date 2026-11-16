@@ -3206,6 +3206,8 @@
   .k-tour-knoepfe { grid-column: 1 / -1; display: flex; gap: 6px; justify-content: flex-end; margin-top: 4px; }
   .k-tour-knoepfe button { font-family: var(--k-font); letter-spacing: .08em; text-transform: uppercase;
     font-size: 12px; padding: 4px 12px; border-radius: 0; }
+  .k-tour-doku { align-self: center; font-size: 12.5px; color: var(--k-dim); text-decoration: underline; margin-right: auto; padding: 0 6px; white-space: nowrap; }
+  .k-tour-doku:hover, .k-tour-doku:focus { color: #fff; }
   .k-tour-knoepfe .k-tour-leise { margin-right: auto; background: transparent; border-color: transparent; color: var(--k-dim); }
   .k-tour-knoepfe button.menu-nav-sel { outline: 0; border-color: #fff; background: var(--k-blau); color: var(--k-blau-text); }
   /* ---- Gefuehrtes Tutorial (v1.3.15, WIP): Karte oben mittig ueber dem Cockpit; solange es auf
@@ -6698,7 +6700,7 @@
              Start ausgewaehlt und blau ausgefuellt". Die Wahl fuehrt 96-home.js (homeFokus). -->
         <a class="k-tutorial-knopf k-wiki" id="k-wiki" href="https://omegasim.miraheze.org/wiki/Hauptseite"
            target="_blank" rel="noopener noreferrer" aria-label="Wiki">Wiki</a>
-        <button type="button" id="k-tutorial-start" class="k-tutorial-knopf">Tutorial</button>
+        <button type="button" id="k-tutorial-start" class="k-tutorial-knopf" data-i18n-skip>Start Guide</button>
         <!-- BESTELLT: "neben dem Tutorial-Button noch einen Button zur Steuerung ... dass es nur
              mit Gamepad funktioniert, zeige die Tasten und am Ende, wo man das Bild vom
              Controller mit allen Tasten sieht und die Belegung aendern kann". -->
@@ -15226,6 +15228,7 @@
       </div>
       <div class="k-tour-knoepfe">
         <button type="button" id="k-tour-ende" class="k-tour-leise">Beenden</button>
+        <a id="k-tour-doku" class="k-tour-doku" href="quickstart.html" target="_blank" rel="noopener" hidden data-i18n-skip>Quick start guide (document) &#8599;</a>
         <button type="button" id="k-tour-zurueck">&#9664; Zur&uuml;ck</button>
         <button type="button" id="k-tour-weiter" class="primary">Weiter &#9654;</button>
       </div>
